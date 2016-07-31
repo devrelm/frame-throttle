@@ -1,16 +1,17 @@
 function throttle(callback) {
     var running = false;
 
-    function frameHandler() {
-        callback();
-        running = false;
-    }
-
-    return function (e) {
+    return function () {
         if (running) {
             return;
         }
         running = true;
+
+        var args = arguments;
+        function frameHandler() {
+            callback.apply(undefined, args);
+            running = false;
+        }
 
         if (requestAnimationFrame) {
             requestAnimationFrame(frameHandler);

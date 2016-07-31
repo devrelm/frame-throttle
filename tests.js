@@ -138,3 +138,24 @@ test('no longer calls listener after removeEventListener', (t) => {
     t.equal(listener.callCount, 1,
         'listener is not called during second cycle after throttled listener is removed');
 });
+
+test('passes the event object to the original listener', (t) => {
+    t.plan(2);
+
+    const throttle = require('./throttle');
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const event = 'resize';
+    const eventObject = new window.Event(event);
+
+    window.addEventListener(event, throttledListener);
+
+    window.dispatchEvent(eventObject);
+    mockRaf.step();
+
+    t.equal(listener.callCount, 1,
+        'sanity check - listener called during first event/frame cycle');
+
+    t.equal(listener.getCall(0).args[0], eventObject,
+        'listener called with the provided event object');
+});
