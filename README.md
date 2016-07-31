@@ -1,5 +1,7 @@
 # frame-throttle
 
+[![Build Status][travis-image]][travis-url]
+
 A lightweight wrapper using [requestAnimationFrame] to throttle event callbacks.
 
 ## Installation
@@ -33,5 +35,8 @@ var throttledListener = throttle(listener);
 window.addEventListener('resize', throttledListener);
 ```
 
+
+[travis-image]: https://travis-ci.org/pelotoncycle/frame-throttle.svg?branch=master
+[travis-url]: https://travis-ci.org/pelotoncycle/frame-throttle
 
 [requestAnimationFrame]: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
