@@ -6,6 +6,14 @@
   "scripts": {
     "test": "node tests.js"
   },
+  "keywords": [
+    "events",
+    "frame",
+    "handler",
+    "listener",
+    "requestAnimationFrame",
+    "throttle"
+  ],
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/pelotoncycle/frame-throttle.git"
