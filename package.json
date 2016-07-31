@@ -4,7 +4,7 @@
   "description": "A lightweight way to throttle events using requestAnimationFrame",
   "main": "throttle.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/pelotoncycle/frame-throttle/issues"
   },
-  "homepage": "https://github.com/pelotoncycle/frame-throttle#readme"
+  "homepage": "https://github.com/pelotoncycle/frame-throttle#readme",
+  "devDependencies": {
+    "jsdom": "^9.4.1",
+    "mock-raf": "0.0.2",
+    "sinon": "^1.17.5",
+    "tape": "^4.6.0",
+    "tape-catch": "^1.0.6"
+  }
 }
