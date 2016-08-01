@@ -1,6 +1,7 @@
 # frame-throttle
 
 [![Build Status][travis-image]][travis-url]
+[![Coverage Status][coveralls-image]][coveralls-url]
 
 A lightweight wrapper using [requestAnimationFrame] to throttle event callbacks.
 
@@ -38,5 +39,8 @@ window.addEventListener('resize', throttledListener);
 
 [travis-image]: https://travis-ci.org/pelotoncycle/frame-throttle.svg?branch=master
 [travis-url]: https://travis-ci.org/pelotoncycle/frame-throttle
+
+[coveralls-image]: https://coveralls.io/repos/github/pelotoncycle/frame-throttle/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/pelotoncycle/frame-throttle?branch=master
 
 [requestAnimationFrame]: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
