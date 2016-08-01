@@ -10,14 +10,14 @@ global.requestAnimationFrame = sinon.spy(mockRaf.raf);
 test('requiring throttle', (t) => {
     t.plan(1);
 
-    const throttle = require('./throttle');
+    const throttle = require('../throttle');
     t.equal(typeof throttle, 'function', 'returns a function');
 });
 
 test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
     t.plan(3);
 
-    const throttle = require('./throttle');
+    const throttle = require('../throttle');
     const throttledListener = throttle(() => {});
     const event = 'resize';
     requestAnimationFrame.reset();
@@ -41,7 +41,7 @@ test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
 test('waits until the animation frame to call the callback', (t) => {
     t.plan(3);
 
-    const throttle = require('./throttle');
+    const throttle = require('../throttle');
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
@@ -66,7 +66,7 @@ test('waits until the animation frame to call the callback', (t) => {
 test('calls the listener multiple times for multiple event/frame cycles', (t) => {
     t.plan(3);
 
-    const throttle = require('./throttle');
+    const throttle = require('../throttle');
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
@@ -92,7 +92,7 @@ test('calls the listener multiple times for multiple event/frame cycles', (t) =>
 test('calls the listener once per event dispatch', (t) => {
     t.plan(3);
 
-    const throttle = require('./throttle');
+    const throttle = require('../throttle');
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
@@ -117,7 +117,7 @@ test('calls the listener once per event dispatch', (t) => {
 test('no longer calls listener after removeEventListener', (t) => {
     t.plan(2);
 
-    const throttle = require('./throttle');
+    const throttle = require('../throttle');
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
@@ -142,7 +142,7 @@ test('no longer calls listener after removeEventListener', (t) => {
 test('passes the event object to the original listener', (t) => {
     t.plan(2);
 
-    const throttle = require('./throttle');
+    const throttle = require('../throttle');
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
