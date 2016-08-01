@@ -4,7 +4,7 @@
   "description": "A lightweight way to throttle events using requestAnimationFrame",
   "main": "throttle.js",
   "scripts": {
-    "test": "node tests/*.js",
+    "test": "tape tests/*.js",
     "test-cov": "istanbul cover tests/*.js",
     "coveralls": "npm run test-cov -- --report lcovonly && cat coverage/lcov.info | coveralls"
   },
