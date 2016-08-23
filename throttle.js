@@ -1,5 +1,8 @@
 function throttle(callback) {
     var running = false;
+    function resetRunning() {
+        running = false;
+    }
 
     return function () {
         if (running) {
@@ -10,13 +13,14 @@ function throttle(callback) {
         var args = arguments;
         function frameHandler() {
             callback.apply(undefined, args);
-            running = false;
+            resetRunning();
         }
 
-        if (requestAnimationFrame) {
-            requestAnimationFrame(frameHandler);
+        if ('requestAnimationFrame' in window) {
+            window.requestAnimationFrame(frameHandler);
         } else {
-            setTimeout(frameHandler, 1000 / 60); // 60 fps
+            callback.apply(undefined, args);
+            window.setTimeout(resetRunning, 1000 / 60); // 60 fps
         }
     };
 }
