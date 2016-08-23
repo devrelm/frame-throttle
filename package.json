@@ -4,8 +4,8 @@
   "description": "A lightweight way to throttle events using requestAnimationFrame",
   "main": "throttle.js",
   "scripts": {
-    "test": "tape tests/*.js",
-    "test-cov": "istanbul cover tests/*.js",
+    "test": "tape tests/*.tests.js",
+    "test-cov": "istanbul cover tape -- tests/*.tests.js",
     "coveralls": "npm run test-cov -- --report lcovonly && cat coverage/lcov.info | coveralls"
   },
   "keywords": [
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/pelotoncycle/frame-throttle#readme",
   "devDependencies": {
     "coveralls": "^2.11.12",
-    "istanbul": "^0.4.4",
+    "istanbul": "0.4.5",
     "jsdom": "^9.4.1",
     "mock-raf": "0.0.2",
     "sinon": "^1.17.5",

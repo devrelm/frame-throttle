@@ -1,13 +1,22 @@
 const jsdom = require('jsdom').jsdom;
 const sinon = require('sinon');
-const test = require('tape-catch');
 const mockRaf = require('mock-raf')();
+const test = require('./helpers').test;
 
-const document = jsdom('<html><body></body></html>');
-const window = document.defaultView;
-global.requestAnimationFrame = sinon.spy(mockRaf.raf);
+const setup = () => {
+    const document = jsdom('<html><body></body></html>');
+    global.window = document.defaultView;
+    global.requestAnimationFrame = sinon.spy(mockRaf.raf);
+    window.requestAnimationFrame = requestAnimationFrame;
+};
+
+teardown = () => {
+    delete global.requestAnimationFrame;
+    delete global.window;
+};
 
 test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
+    setup();
     t.plan(3);
 
     const throttle = require('../throttle');
@@ -29,9 +38,10 @@ test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
 
     t.equal(requestAnimationFrame.callCount, 1,
         'does not call requestAnimationFrame again upon second event dispatch');
-});
+}, teardown);
 
 test('waits until the animation frame to call the callback', (t) => {
+    setup();
     t.plan(3);
 
     const throttle = require('../throttle');
@@ -53,9 +63,10 @@ test('waits until the animation frame to call the callback', (t) => {
 
     t.equal(listener.callCount, 1,
         'calls listener during animation frame');
-});
+}, teardown);
 
 test('calls the listener multiple times for multiple event/frame cycles', (t) => {
+    setup();
     t.plan(3);
 
     const throttle = require('../throttle');
@@ -79,9 +90,10 @@ test('calls the listener multiple times for multiple event/frame cycles', (t) =>
 
     t.equals(listener.callCount, 2,
         'listener is called during second event/frame cycle');
-});
+}, teardown);
 
 test('calls the listener once per event dispatch', (t) => {
+    setup();
     t.plan(3);
 
     const throttle = require('../throttle');
@@ -104,9 +116,10 @@ test('calls the listener once per event dispatch', (t) => {
 
     t.equal(listener.callCount, 1,
         'listener is not called during second frame without event');
-});
+}, teardown);
 
 test('no longer calls listener after removeEventListener', (t) => {
+    setup();
     t.plan(2);
 
     const throttle = require('../throttle');
@@ -129,9 +142,10 @@ test('no longer calls listener after removeEventListener', (t) => {
 
     t.equal(listener.callCount, 1,
         'listener is not called during second cycle after throttled listener is removed');
-});
+}, teardown);
 
 test('passes the event object to the original listener', (t) => {
+    setup();
     t.plan(2);
 
     const throttle = require('../throttle');
@@ -150,4 +164,4 @@ test('passes the event object to the original listener', (t) => {
 
     t.equal(listener.getCall(0).args[0], eventObject,
         'listener called with the provided event object');
-});
+}, teardown);
