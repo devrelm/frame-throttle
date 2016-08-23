@@ -38,7 +38,6 @@ test('waits until the animation frame to call the callback', (t) => {
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
-    listener.reset();
 
     window.addEventListener(event, throttledListener);
 
