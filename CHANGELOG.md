@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.1.0 - 2016-08-23]
 ### Fixed
 - When [requestAnimationFrame] does not exist, call the callback immediately
   and ignore further events for 1/60th of a second. Old behavior was to wait
@@ -21,4 +21,4 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 [requestAnimationFrame]: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
 
-[Unreleased]: https://github.com/pelotoncycle/frame-throttle/compare/v1.0.0...HEAD
+[1.1.0]: https://github.com/pelotoncycle/frame-throttle/compare/v1.0.0...v1.1.0

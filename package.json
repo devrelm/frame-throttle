@@ -1,6 +1,6 @@
 {
   "name": "frame-throttle",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A lightweight way to throttle events using requestAnimationFrame",
   "main": "throttle.js",
   "scripts": {
