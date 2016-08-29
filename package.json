@@ -4,8 +4,11 @@
   "description": "A lightweight way to throttle events using requestAnimationFrame",
   "main": "throttle.js",
   "scripts": {
+    "compile": "tsc",
+    "pretest": "npm run compile",
+    "prepublish": "npm test",
     "test": "tape tests/*.tests.js",
-    "test-cov": "istanbul cover tape -- tests/*.tests.js",
+    "test-cov": "npm run pretest && istanbul cover tape -- tests/*.tests.js",
     "coveralls": "npm run test-cov -- --report lcovonly && cat coverage/lcov.info | coveralls"
   },
   "keywords": [
@@ -33,6 +36,7 @@
     "mock-raf": "0.0.2",
     "sinon": "^1.17.5",
     "tape": "^4.6.0",
-    "tape-catch": "^1.0.6"
+    "tape-catch": "^1.0.6",
+    "typescript": "^1.8.10"
   }
 }

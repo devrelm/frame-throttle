@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "newLine": "LF",
+        "noImplicitUseStrict": true,
+        "outDir": "."
+    },
+    "files": [
+        "src/throttle.ts"
+    ]
+}
