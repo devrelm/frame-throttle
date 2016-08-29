@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Changed
+- Converted project to [TypeScript]
+
 ## [1.1.0 - 2016-08-23]
 ### Fixed
 - When [requestAnimationFrame] does not exist, call the callback immediately
@@ -20,5 +24,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 [requestAnimationFrame]: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+[TypeScript]: http://www.typescriptlang.org
 
+[Unreleased]: https://github.com/pelotoncycle/frame-throttle/compare/v1.1.0...HEAD
 [1.1.0]: https://github.com/pelotoncycle/frame-throttle/compare/v1.0.0...v1.1.0
