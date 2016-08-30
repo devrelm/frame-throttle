@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "declaration": true,
+        "listFiles": true,
         "moduleResolution": "node",
         "newLine": "LF",
         "noImplicitUseStrict": true,
