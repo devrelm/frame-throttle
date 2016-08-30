@@ -1,10 +1,14 @@
 {
     "compilerOptions": {
+        "moduleResolution": "node",
         "newLine": "LF",
         "noImplicitUseStrict": true,
         "outDir": "."
     },
     "files": [
-        "src/throttle.ts"
+        "src/throttle.ts",
+        "src/tests/requestAnimationFrame.tests.ts",
+        "src/tests/setTimeout.tests.ts",
+        "src/tests/throttle.tests.ts"
     ]
 }

@@ -1,51 +1,48 @@
-const jsdom = require('jsdom').jsdom;
-const sinon = require('sinon');
-const test = require('./helpers').test;
+import {jsdom} from 'jsdom';
+import * as sinon from 'sinon';
+import {test} from './helpers';
 
-const FRAME_TIME = 1000/60;
-const frameTick = () => {
-    clock.tick(FRAME_TIME);
-};
+const mockRaf = require('mock-raf')();
 
 const setup = () => {
     const document = jsdom('<html><body></body></html>');
     global.window = document.defaultView;
-    global.clock = sinon.useFakeTimers();
-    sinon.stub(window, 'setTimeout', global.setTimeout);
-    global.setTimeout = window.setTimeout;
+    global.window.requestAnimationFrame = mockRaf.raf;
 };
+
 const teardown = () => {
-    global.window.setTimeout.restore();
-    global.clock.restore();
+    delete global.window;
 };
 
-test('calls setTimeout once for multiple event occurrences', (t) => {
-    t.plan(3);
+test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
     setup();
+    t.plan(3);
 
+    const rafSpy = sinon.stub(window, 'requestAnimationFrame');
     const throttle = require('../throttle').throttle;
     const throttledListener = throttle(() => {});
     const event = 'resize';
+    rafSpy.reset();
 
     window.addEventListener(event, throttledListener);
 
-    t.equal(window.setTimeout.callCount, 0,
-        'sanity check - setTimeout not called before event dispatch');
+    t.equal(rafSpy.callCount, 0,
+        'sanity check - requestAnimationFrame not called before event dispatch');
 
     window.dispatchEvent(new window.Event(event));
 
-    t.equal(window.setTimeout.callCount, 1,
-        'calls setTimeout upon first event dispatch');
+    t.equal(rafSpy.callCount, 1,
+        'calls requestAnimationFrame upon first event dispatch');
 
     window.dispatchEvent(new window.Event(event));
 
-    t.equal(window.setTimeout.callCount, 1,
-        'does not call setTimeout again upon second event dispatch');
+    t.equal(rafSpy.callCount, 1,
+        'does not call requestAnimationFrame again upon second event dispatch');
 }, teardown);
 
-test('waits 1/60th of a second to call the callback', (t) => {
+test('waits until the animation frame to call the callback', (t) => {
     setup();
-    t.plan(4);
+    t.plan(3);
 
     const throttle = require('../throttle').throttle;
     const listener = sinon.spy();
@@ -59,21 +56,13 @@ test('waits 1/60th of a second to call the callback', (t) => {
 
     window.dispatchEvent(new window.Event(event));
 
+    t.equal(listener.callCount, 0,
+        'does not call listener upon first event dispatch');
+
+    mockRaf.step();
+
     t.equal(listener.callCount, 1,
-        'calls listener upon first event dispatch');
-
-    listener.reset();
-    window.dispatchEvent(new window.Event(event));
-    clock.tick(FRAME_TIME - 1);
-    window.dispatchEvent(new window.Event(event));
-
-    t.equal(listener.callCount, 0,
-        'does not call the listener again before 1/60th of a second');
-
-    clock.tick(1);
-
-    t.equal(listener.callCount, 0,
-        'events fired prior to 1/60th sec do not set callbacks for after 1/60th sec');
+        'calls listener during animation frame');
 }, teardown);
 
 test('calls the listener multiple times for multiple event/frame cycles', (t) => {
@@ -91,13 +80,13 @@ test('calls the listener multiple times for multiple event/frame cycles', (t) =>
         'sanity check - listener not called before event dispatch');
 
     window.dispatchEvent(new window.Event(event));
-    frameTick();
+    mockRaf.step();
 
     t.equals(listener.callCount, 1,
         'listener is called during first event/frame cycle');
 
     window.dispatchEvent(new window.Event(event));
-    frameTick();
+    mockRaf.step();
 
     t.equals(listener.callCount, 2,
         'listener is called during second event/frame cycle');
@@ -118,12 +107,12 @@ test('calls the listener once per event dispatch', (t) => {
         'sanity check - listener not called before event dispatch');
 
     window.dispatchEvent(new window.Event(event));
-    frameTick();
+    mockRaf.step();
 
     t.equal(listener.callCount, 1,
         'listener is called during first event/frame cycle');
 
-    frameTick();
+    mockRaf.step();
 
     t.equal(listener.callCount, 1,
         'listener is not called during second frame without event');
@@ -141,7 +130,7 @@ test('no longer calls listener after removeEventListener', (t) => {
     window.addEventListener(event, throttledListener);
 
     window.dispatchEvent(new window.Event(event));
-    frameTick();
+    mockRaf.step();
 
     t.equal(listener.callCount, 1,
         'sanity check - listener called during first event/frame cycle');
@@ -149,7 +138,7 @@ test('no longer calls listener after removeEventListener', (t) => {
     window.removeEventListener(event, throttledListener);
 
     window.dispatchEvent(new window.Event(event));
-    frameTick();
+    mockRaf.step();
 
     t.equal(listener.callCount, 1,
         'listener is not called during second cycle after throttled listener is removed');
@@ -168,7 +157,7 @@ test('passes the event object to the original listener', (t) => {
     window.addEventListener(event, throttledListener);
 
     window.dispatchEvent(eventObject);
-    frameTick();
+    mockRaf.step();
 
     t.equal(listener.callCount, 1,
         'sanity check - listener called during first event/frame cycle');

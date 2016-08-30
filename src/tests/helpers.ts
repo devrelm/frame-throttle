@@ -1,7 +1,8 @@
-const tapeTest = require('tape-catch');
+/// <reference path="../../typings/tsd.d.ts" />
+import * as tape from 'tape-catch';
 
-module.exports.test = (description, test, final) => {
-    tapeTest(description, (t) => {
+export const test = (description, test, final) => {
+    tape(description, (t) => {
         let error;
         try {
             test(t);
