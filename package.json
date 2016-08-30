@@ -2,14 +2,14 @@
   "name": "frame-throttle",
   "version": "1.1.0",
   "description": "A lightweight way to throttle events using requestAnimationFrame",
-  "main": "throttle.js",
-  "typings": "throttle.d.ts",
+  "main": "dist/throttle.js",
+  "typings": "dist/throttle.d.ts",
   "scripts": {
     "compile": "tsc",
     "pretest": "npm run compile",
     "prepublish": "npm test",
-    "test": "tape tests/*.tests.js",
-    "test-cov": "npm run pretest && istanbul cover tape -- tests/*.tests.js",
+    "test": "tape dist/tests/*.tests.js",
+    "test-cov": "npm run pretest && istanbul cover tape -- dist/tests/*.tests.js",
     "coveralls": "npm run test-cov -- --report lcovonly && cat coverage/lcov.info | coveralls"
   },
   "keywords": [

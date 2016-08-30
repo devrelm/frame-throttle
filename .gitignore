@@ -5,5 +5,4 @@ coverage
 *.log
 
 # files we don't care to publish
-tests/**/*.js
-tests/*.d.ts
+dist/tests

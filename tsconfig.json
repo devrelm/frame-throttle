@@ -5,7 +5,7 @@
         "moduleResolution": "node",
         "newLine": "LF",
         "noImplicitUseStrict": true,
-        "outDir": "."
+        "outDir": "./dist"
     },
     "files": [
         "src/throttle.ts",
