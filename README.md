@@ -31,7 +31,7 @@ To use _frame-throttle_, simply create your listener, and pass it to the
 `addEventListener` and `removeEventListener` like any other listener:
 
 ```
-var throttle = require('frame-throttle');
+var throttle = require('frame-throttle').throttle;
 
 var listener = function(e) {
     // handle a 'resize' event
