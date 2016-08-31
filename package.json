@@ -5,7 +5,8 @@
   "main": "dist/frame-throttle.js",
   "typings": "dist/frame-throttle.d.ts",
   "scripts": {
-    "compile": "tsc",
+    "clean": "rm -rd dist",
+    "compile": "npm run clean && tsc",
     "pretest": "npm run compile",
     "prepublish": "npm test",
     "test": "tape dist/tests/*.tests.js",
