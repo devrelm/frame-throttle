@@ -8,9 +8,9 @@
         "outDir": "./dist"
     },
     "files": [
-        "src/throttle.ts",
+        "src/frame-throttle.ts",
         "src/tests/requestAnimationFrame.tests.ts",
         "src/tests/setTimeout.tests.ts",
-        "src/tests/throttle.tests.ts"
+        "src/tests/frame-throttle.tests.ts"
     ]
 }
