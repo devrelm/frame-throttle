@@ -2,8 +2,8 @@
   "name": "frame-throttle",
   "version": "1.1.0",
   "description": "A lightweight way to throttle events using requestAnimationFrame",
-  "main": "dist/throttle.js",
-  "typings": "dist/throttle.d.ts",
+  "main": "dist/frame-throttle.js",
+  "typings": "dist/frame-throttle.d.ts",
   "scripts": {
     "compile": "tsc",
     "pretest": "npm run compile",
