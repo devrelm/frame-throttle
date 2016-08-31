@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Converted project to [TypeScript]
 
-## [1.1.0 - 2016-08-23]
+## [1.1.0] - 2016-08-23
 ### Fixed
 - When [requestAnimationFrame] does not exist, call the callback immediately
   and ignore further events for 1/60th of a second. Old behavior was to wait
