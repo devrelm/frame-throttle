@@ -1,8 +1,10 @@
 import * as test from 'tape-catch';
+import {throttle} from '../frame-throttle';
 
 test('requiring throttle', (t) => {
-    t.plan(1);
+    t.plan(2);
 
-    const throttle = require('../frame-throttle').throttle;
-    t.equal(typeof throttle, 'function', 'returns a function');
+    const requiredThrottle = require('../frame-throttle').throttle;
+    t.notEqual(requiredThrottle, undefined, 'returns a module containing a `throttle` member');
+    t.equal(requiredThrottle, throttle, 'returns a module containing the `throttle` method');
 });

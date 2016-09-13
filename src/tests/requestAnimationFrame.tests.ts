@@ -1,6 +1,7 @@
 import {jsdom} from 'jsdom';
 import * as sinon from 'sinon';
 import {test} from './helpers';
+import {throttle} from '../frame-throttle';
 
 const mockRaf = require('mock-raf')();
 
@@ -19,7 +20,6 @@ test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
     t.plan(3);
 
     const rafSpy = sinon.stub(window, 'requestAnimationFrame');
-    const throttle = require('../frame-throttle').throttle;
     const throttledListener = throttle(() => {});
     const event = 'resize';
     rafSpy.reset();
@@ -44,7 +44,6 @@ test('waits until the animation frame to call the callback', (t) => {
     setup();
     t.plan(3);
 
-    const throttle = require('../frame-throttle').throttle;
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
@@ -69,7 +68,6 @@ test('calls the listener multiple times for multiple event/frame cycles', (t) =>
     setup();
     t.plan(3);
 
-    const throttle = require('../frame-throttle').throttle;
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
@@ -96,7 +94,6 @@ test('calls the listener once per event dispatch', (t) => {
     setup();
     t.plan(3);
 
-    const throttle = require('../frame-throttle').throttle;
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
@@ -122,7 +119,6 @@ test('no longer calls listener after removeEventListener', (t) => {
     setup();
     t.plan(2);
 
-    const throttle = require('../frame-throttle').throttle;
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
@@ -148,7 +144,6 @@ test('passes the event object to the original listener', (t) => {
     setup();
     t.plan(2);
 
-    const throttle = require('../frame-throttle').throttle;
     const listener = sinon.spy();
     const throttledListener = throttle(listener);
     const event = 'resize';
