@@ -6,8 +6,10 @@
   "typings": "dist/frame-throttle.d.ts",
   "scripts": {
     "clean": "rm -rd dist",
+    "lint": "npm run lint-noforce -- --force",
+    "lint-noforce": "tslint --project tsconfig.json",
     "compile": "npm run clean && tsc",
-    "pretest": "npm run compile",
+    "pretest": "npm run lint-noforce && npm run compile",
     "prepublish": "npm test",
     "test": "tape dist/tests/*.tests.js",
     "test-cov": "npm run pretest && istanbul cover tape -- dist/tests/*.tests.js",
@@ -39,6 +41,7 @@
     "sinon": "^1.17.5",
     "tape": "^4.6.0",
     "tape-catch": "^1.0.6",
+    "tslint": "^3.15.1",
     "typescript": "^1.8.10"
   }
 }

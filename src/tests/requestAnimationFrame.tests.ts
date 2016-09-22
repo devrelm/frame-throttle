@@ -20,7 +20,7 @@ test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
     t.plan(3);
 
     const rafSpy = sinon.stub(window, 'requestAnimationFrame');
-    const throttledListener = throttle(() => {});
+    const throttledListener = throttle(() => undefined);
     const event = 'resize';
     rafSpy.reset();
 
