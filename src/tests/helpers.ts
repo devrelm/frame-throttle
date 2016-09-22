@@ -1,18 +1,18 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import * as tape from 'tape-catch';
 
-export const test = (description, test, final) => {
-    tape(description, (t) => {
+export const test = (description, callback, final) => {
+    tape(description, (assert) => {
         let error;
         try {
-            test(t);
+            callback(assert);
         } catch (e) {
             error = e;
         } finally {
             try {
-                if (final) final();
+                if (final) { final(); }
             } finally {
-                if (error) throw error;
+                if (error) { throw error; }
             }
         }
     });

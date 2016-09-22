@@ -5,7 +5,7 @@ import {throttle} from '../frame-throttle';
 
 let clock: Sinon.SinonFakeTimers;
 
-const FRAME_TIME = 1000/60;
+const FRAME_TIME = 1000 / 60;
 const frameTick = () => {
     clock.tick(FRAME_TIME);
 };
@@ -26,7 +26,7 @@ test('calls setTimeout once for multiple event occurrences', (t) => {
     setup();
 
     const setTimeoutStub = sinon.stub(window, 'setTimeout', clock.setTimeout);
-    const throttledListener = throttle(() => {});
+    const throttledListener = throttle(() => undefined);
     const event = 'resize';
 
     window.addEventListener(event, throttledListener);

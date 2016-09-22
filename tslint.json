@@ -1,0 +1,14 @@
+{
+  "extends": "tslint:latest",
+  "rules": {
+      "no-reference": false,
+      "no-unsafe-finally": false,
+      "no-var-requires": false,
+      "only-arrow-functions": false,
+      "ordered-imports": false,
+      "quotemark": [
+          true,
+          "single"
+      ]
+  }
+}

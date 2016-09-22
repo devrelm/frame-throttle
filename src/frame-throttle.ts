@@ -1,5 +1,5 @@
 export function throttle(callback) {
-    var running = false;
+    let running = false;
     function resetRunning() {
         running = false;
     }
@@ -10,7 +10,7 @@ export function throttle(callback) {
         }
         running = true;
 
-        var args = arguments;
+        const args = arguments;
         function frameHandler() {
             callback.apply(undefined, args);
             resetRunning();
