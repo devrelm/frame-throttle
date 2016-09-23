@@ -43,6 +43,12 @@ window.addEventListener('resize', throttledListener);
 window.removeEventListener('resize', throttledListener);
 ```
 
+You can use `throttle` to throttle any callback method. The callback will be
+called once during the next animation frame using `requestAnimationFrame`
+if it exists. If `requestAnimationFrame` does not exist, then the callback will
+be called immediately, and `setTimeout` will be used to ignore further calls
+for 1/60th of a second.
+
 ## Gotchas
 
 There is a slight difference in how `frame-throttle` works that depends on
