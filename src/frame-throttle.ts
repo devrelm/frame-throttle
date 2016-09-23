@@ -6,21 +6,24 @@ export const throttle = (callback: CallbackFunction): CallbackFunction => {
         running = false;
     }
 
+    let callbackThis: any;
+    let args: IArguments;
     return function (): void {
+        callbackThis = this;
+        args = arguments;
+
         if (running) {
             return;
         }
         running = true;
 
-        const listenerThis = this;
-        const args = arguments;
         if ('requestAnimationFrame' in window) {
             window.requestAnimationFrame(() => {
-                callback.apply(listenerThis, args);
+                callback.apply(callbackThis, args);
                 resetRunning();
             });
         } else {
-            callback.apply(listenerThis, args);
+            callback.apply(callbackThis, args);
             window.setTimeout(resetRunning, 1000 / 60); // 60 fps
         }
     };
