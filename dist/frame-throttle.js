@@ -8,16 +8,16 @@ function throttle(callback) {
             return;
         }
         running = true;
+        var listenerThis = this;
         var args = arguments;
-        function frameHandler() {
-            callback.apply(undefined, args);
-            resetRunning();
-        }
         if ('requestAnimationFrame' in window) {
-            window.requestAnimationFrame(frameHandler);
+            window.requestAnimationFrame(function () {
+                callback.apply(listenerThis, args);
+                resetRunning();
+            });
         }
         else {
-            callback.apply(undefined, args);
+            callback.apply(listenerThis, args);
             window.setTimeout(resetRunning, 1000 / 60); // 60 fps
         }
     };

@@ -21,6 +21,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   // Wrong!
   var throttle = require('frame-throttle');
   ```
+- The throttled listener now passes its `this` context to the child listener
 
 ## [1.1.0] - 2016-08-23
 ### Fixed
