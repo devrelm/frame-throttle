@@ -58,13 +58,15 @@ If `requestAnimationFrame` exists, then the callback will be called during the
 animation-frame callback section of the browser's next [browsing context event loop].
 In this case the callback is called at the optimal time because all layout and
 dimensions will be the most up-to-date available before the page is rendered
-to the screen.
+to the screen. The arguments passed to the callback will be the most recent
+arguments passed to the throttled listener before the animation frame.
 
 If `requestAnimationFrame` does not exist, then the callback will be called
 immediately, and will not be called again for at least 1/60th of a second. This
 allows you to make make adjustments before the next frame renders, but there is
 a small possibility that the information you calculate your changes off of will
-be out of date by the time the next frame renders.
+be out of date by the time the next frame renders. The arguments will be the
+first arguments passed to the throttled listener, reset every 1/60th of a second.
 
 
 [travis-image]: https://travis-ci.org/pelotoncycle/frame-throttle.svg?branch=master

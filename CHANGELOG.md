@@ -21,7 +21,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   // Wrong!
   var throttle = require('frame-throttle');
   ```
-- The throttled listener now passes its `this` context to the child listener
+- The throttled listener now passes its `this` context to the callback
+- The callback is now passed the arguments for the most recent call to the
+  throttled method rather than being passed the oldest arguments.
+  This only happens when `requestAnimationFrame` is present.
 
 ## [1.1.0] - 2016-08-23
 ### Fixed

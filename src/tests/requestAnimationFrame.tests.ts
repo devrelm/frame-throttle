@@ -161,6 +161,30 @@ test('passes the event object to the original listener', (t) => {
         'listener called with the provided event object');
 }, teardown);
 
+test('passes the latest event object to the original listener', (t) => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+
+    window.addEventListener('resize', throttledListener);
+    const eventObject = new window.Event('resize');
+    window.dispatchEvent(eventObject);
+
+    window.addEventListener('scroll', throttledListener);
+    const secondEventObject = new window.Event('scroll');
+    window.dispatchEvent(secondEventObject);
+
+    t.notEqual(eventObject, secondEventObject,
+        'sanity check - the event objects are not equal');
+
+    mockRaf.step();
+
+    t.equal(listener.getCall(0).args[0].type, secondEventObject.type,
+        'listener called with the second provided event object');
+}, teardown);
+
 test('passes the throttled listener context as the listener context', (t) => {
     setup();
     t.plan(1);

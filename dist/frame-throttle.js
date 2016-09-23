@@ -3,21 +3,23 @@ exports.throttle = function (callback) {
     function resetRunning() {
         running = false;
     }
+    var callbackThis;
+    var args;
     return function () {
+        callbackThis = this;
+        args = arguments;
         if (running) {
             return;
         }
         running = true;
-        var listenerThis = this;
-        var args = arguments;
         if ('requestAnimationFrame' in window) {
             window.requestAnimationFrame(function () {
-                callback.apply(listenerThis, args);
+                callback.apply(callbackThis, args);
                 resetRunning();
             });
         }
         else {
-            callback.apply(listenerThis, args);
+            callback.apply(callbackThis, args);
             window.setTimeout(resetRunning, 1000 / 60); // 60 fps
         }
     };
