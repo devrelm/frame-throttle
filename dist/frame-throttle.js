@@ -1,4 +1,4 @@
-function throttle(callback) {
+exports.throttle = function (callback) {
     var running = false;
     function resetRunning() {
         running = false;
@@ -21,5 +21,4 @@ function throttle(callback) {
             window.setTimeout(resetRunning, 1000 / 60); // 60 fps
         }
     };
-}
-exports.throttle = throttle;
+};

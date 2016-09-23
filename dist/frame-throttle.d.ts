@@ -1,1 +1,1 @@
-export declare function throttle(callback: any): () => void;
+export declare const throttle: (callback: (...args: any[]) => void) => (...args: any[]) => void;

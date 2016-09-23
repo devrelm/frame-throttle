@@ -1,10 +1,12 @@
-export function throttle(callback) {
+type CallbackFunction = (...args: any[]) => void;
+
+export const throttle = (callback: CallbackFunction): CallbackFunction => {
     let running = false;
     function resetRunning() {
         running = false;
     }
 
-    return function () {
+    return function (): void {
         if (running) {
             return;
         }
@@ -22,4 +24,4 @@ export function throttle(callback) {
             window.setTimeout(resetRunning, 1000 / 60); // 60 fps
         }
     };
-}
+};
