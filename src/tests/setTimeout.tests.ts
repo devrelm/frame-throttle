@@ -173,3 +173,21 @@ test('passes the event object to the original listener', (t) => {
     t.equal(listener.getCall(0).args[0], eventObject,
         'listener called with the provided event object');
 }, teardown);
+
+test('passes the throttled listener context as the listener context', (t) => {
+    setup();
+    t.plan(1);
+
+    const listener = sinon.spy();
+    const id = {};
+    const throttledListener = throttle(listener).bind(id);
+    const event = 'resize';
+    const eventObject = new window.Event(event);
+
+    window.addEventListener(event, throttledListener);
+    window.dispatchEvent(eventObject);
+    frameTick();
+
+    t.equal(listener.getCall(0).thisValue, id,
+        'listener is called with the context of the throttled listener');
+}, teardown);
