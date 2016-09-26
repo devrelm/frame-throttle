@@ -5,7 +5,8 @@
         "moduleResolution": "node",
         "newLine": "LF",
         "noImplicitUseStrict": true,
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "strictNullChecks": true
     },
     "files": [
         "src/frame-throttle.ts",
