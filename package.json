@@ -4,6 +4,10 @@
   "description": "A lightweight way to throttle events and callbacks using requestAnimationFrame",
   "main": "./dist/frame-throttle.js",
   "types": "./dist/frame-throttle.d.ts",
+  "files": [
+    "./dist/frame-throttle.js",
+    "./dist/frame-throttle.d.ts"
+  ],
   "scripts": {
     "clean": "del-cli dist",
     "lint": "npm run lint-noforce -- --force",
