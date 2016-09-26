@@ -1,8 +1,6 @@
+dist
 node_modules
 
 # logs & reports
 coverage
 *.log
-
-# files we don't care to publish
-dist/tests
