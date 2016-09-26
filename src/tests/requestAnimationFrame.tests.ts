@@ -202,3 +202,26 @@ test('passes the throttled listener context as the listener context', (t) => {
     t.equal(listener.getCall(0).thisValue, id,
         'listener is called with the context of the throttled listener');
 }, teardown);
+
+test('throttles plain calls to the callback', (t) => {
+    setup();
+    t.plan(3);
+
+    const callback = sinon.spy();
+    const firstCallArgument = {};
+    const secondCallArgument = {};
+    const throttledCallback = throttle(callback);
+
+    throttledCallback(firstCallArgument);
+    throttledCallback(secondCallArgument);
+
+    t.false(callback.called,
+        'callback is not called before rAF');
+
+    mockRaf.step();
+
+    t.true(callback.calledOnce,
+        'callback is called once after rAF');
+    t.true(callback.calledWithExactly(firstCallArgument),
+        'callback was called with the arguments for the first call');
+}, teardown);

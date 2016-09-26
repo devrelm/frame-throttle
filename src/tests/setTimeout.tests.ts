@@ -215,3 +215,30 @@ test('passes the throttled listener context as the listener context', (t) => {
     t.equal(listener.getCall(0).thisValue, id,
         'listener is called with the context of the throttled listener');
 }, teardown);
+
+test('throttles plain calls to the callback', (t) => {
+    setup();
+    t.plan(4);
+
+    const callback = sinon.spy();
+    const firstCallArgument = {};
+    const throttledCallback = throttle(callback);
+
+    throttledCallback(firstCallArgument);
+
+    t.true(callback.calledOnce,
+        'callback is called immediately after the first call');
+    t.true(callback.calledWithExactly(firstCallArgument),
+        'callback was called with the arguments for the first call');
+
+    callback.reset();
+    throttledCallback();
+
+    t.false(callback.called,
+        'callback is not called upon second call to throttled callback before 1/60th second');
+
+    frameTick();
+
+    t.false(callback.called,
+        'callback is not called after 1/60 sec, without calling the throttled callback');
+}, teardown);
