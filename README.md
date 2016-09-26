@@ -11,6 +11,8 @@ A lightweight wrapper using [requestAnimationFrame] to throttle event callbacks.
 
 ## Purpose
 
+_frame-throttle_ improves performance by only calling callbacks once per frame.
+
 When listening to `scroll` and `resize` events (among others), the browser
 tends to fire off more events per second than are actually useful.
 For instance, if your event listener sets some element positions, then it is
@@ -19,35 +21,36 @@ frame. In this case, all of the layout calculations triggered by setting the
 elements' positions will be wasted except for the one time that it runs
 immediately prior to the browser rendering the updated layout to the screen.
 
-To avoid wasting cycles, we can use [requestAnimationFrame] to only run the
+To avoid wasting cycles, we can use [requestAnimationFrame] to only run your
 event listener once just before the page is rendered to the screen.
 For browsers that do not support `requestAnimationFrame`, _frame-throttle_
 will fall back to `setTimeout` (see [gotchas](#gotchas) below.)
 
 ## Use
 
-To use _frame-throttle_, simply create your listener, and pass it to the
-`throttle` method. You can then pass the throttled listener to
-`addEventListener` and `removeEventListener` like any other listener:
+To use _frame-throttle_, simply create your callback, and pass it to the
+`throttle` method — the return value is a throttled callback which you can
+pass to any method that would take your original callback,
+such as `addEventListener` and `removeEventListener`:
 
 ```
 var throttle = require('frame-throttle').throttle;
 
-var listener = function(e) {
+var callback = function(e) {
     // handle a 'resize' event
 }
 
-var throttledListener = throttle(listener);
+var throttledCallback = throttle(callback);
 
-window.addEventListener('resize', throttledListener);
-window.removeEventListener('resize', throttledListener);
+window.addEventListener('resize', throttledCallback);
+window.removeEventListener('resize', throttledCallback);
 ```
 
-You can use `throttle` to throttle any callback method. The callback will be
-called once during the next animation frame using `requestAnimationFrame`
-if it exists. If `requestAnimationFrame` does not exist, then the callback will
-be called immediately, and `setTimeout` will be used to ignore further calls
-for 1/60th of a second.
+You can use `throttle` to throttle any callback, not just event listeners.
+The callback will be called once during the next animation frame using
+`requestAnimationFrame` if it exists. If `requestAnimationFrame` does not exist,
+then the callback will be called immediately, and `setTimeout` will be used to
+ignore further calls for 1/60th of a second.
 
 ## Gotchas
 
@@ -58,15 +61,16 @@ If `requestAnimationFrame` exists, then the callback will be called during the
 animation-frame callback section of the browser's next [browsing context event loop].
 In this case the callback is called at the optimal time because all layout and
 dimensions will be the most up-to-date available before the page is rendered
-to the screen. The arguments passed to the callback will be the most recent
-arguments passed to the throttled listener before the animation frame.
+to the screen. The arguments passed to your callback will be the most recent
+arguments passed to your callback before the animation frame.
 
 If `requestAnimationFrame` does not exist, then the callback will be called
 immediately, and will not be called again for at least 1/60th of a second. This
 allows you to make make adjustments before the next frame renders, but there is
 a small possibility that the information you calculate your changes off of will
-be out of date by the time the next frame renders. The arguments will be the
-first arguments passed to the throttled listener, reset every 1/60th of a second.
+be out of date by the time the next frame renders. The arguments to your callback
+will be the arguments of the first call to the throttled callback, and will
+be reset 1/60th of a second after the first call to the throttled callback.
 
 
 [travis-image]: https://travis-ci.org/pelotoncycle/frame-throttle.svg?branch=master
