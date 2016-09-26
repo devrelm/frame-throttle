@@ -4,6 +4,7 @@
         "listFiles": true,
         "moduleResolution": "node",
         "newLine": "LF",
+        "noImplicitReturns": true,
         "noImplicitUseStrict": true,
         "outDir": "./dist",
         "strictNullChecks": true
