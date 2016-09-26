@@ -4,6 +4,7 @@
         "listFiles": true,
         "moduleResolution": "node",
         "newLine": "LF",
+        "noImplicitAny": true,
         "noImplicitReturns": true,
         "noImplicitUseStrict": true,
         "noUnusedLocals": true,
