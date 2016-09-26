@@ -1,4 +1,4 @@
-type CallbackFunction = (...args: any[]) => void;
+export type CallbackFunction = (...args: any[]) => void;
 
 export const throttle = (callback: CallbackFunction): CallbackFunction => {
     let running = false;
