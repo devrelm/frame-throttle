@@ -8,6 +8,7 @@
         "noImplicitReturns": true,
         "noImplicitUseStrict": true,
         "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "outDir": "./dist",
         "strictNullChecks": true
     },
