@@ -6,6 +6,7 @@
         "newLine": "LF",
         "noImplicitReturns": true,
         "noImplicitUseStrict": true,
+        "noUnusedLocals": true,
         "outDir": "./dist",
         "strictNullChecks": true
     },
