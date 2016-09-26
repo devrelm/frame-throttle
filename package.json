@@ -2,8 +2,8 @@
   "name": "frame-throttle",
   "version": "1.1.0",
   "description": "A lightweight way to throttle events using requestAnimationFrame",
-  "main": "dist/frame-throttle.js",
-  "typings": "dist/frame-throttle.d.ts",
+  "main": "./dist/frame-throttle.js",
+  "types": "./dist/frame-throttle.d.ts",
   "scripts": {
     "clean": "del-cli dist",
     "lint": "npm run lint-noforce -- --force",
@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/pelotoncycle/frame-throttle#readme",
   "devDependencies": {
+    "@types/sinon": "^1.16.31",
     "coveralls": "^2.11.12",
     "del-cli": "^0.2.0",
     "istanbul": "0.4.5",
