@@ -1,7 +1,7 @@
 {
   "name": "frame-throttle",
   "version": "1.1.0",
-  "description": "A lightweight way to throttle events using requestAnimationFrame",
+  "description": "A lightweight way to throttle events and callbacks using requestAnimationFrame",
   "main": "./dist/frame-throttle.js",
   "types": "./dist/frame-throttle.d.ts",
   "scripts": {
