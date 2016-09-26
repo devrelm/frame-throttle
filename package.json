@@ -16,11 +16,13 @@
     "coveralls": "npm run test-cov -- --report lcovonly && cat coverage/lcov.info | coveralls"
   },
   "keywords": [
+    "callback",
     "events",
     "frame",
     "handler",
     "listener",
     "requestAnimationFrame",
+    "setTimeout",
     "throttle"
   ],
   "repository": {
