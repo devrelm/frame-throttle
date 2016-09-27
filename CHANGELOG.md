@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [2.0.0] - 2016-09-26 [YANKED]
 ### Added
 - `frame-throttle.d.ts` - a [TypeScript declaration file] for `frame-throttle.js`
+
 ### Changed
 - Converted project to [TypeScript]
 - Renamed main file from `throttle.js` to `frame-throttle.js`
@@ -29,6 +30,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - The callback is now passed the arguments for the most recent call to the
   throttled method rather than being passed the oldest arguments.
   This only happens when `requestAnimationFrame` is present.
+
 ### Known Issues
 - `package.json` was misconfigured and didn't include the correct files
 
