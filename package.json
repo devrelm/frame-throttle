@@ -2,11 +2,12 @@
   "name": "frame-throttle",
   "version": "2.0.0",
   "description": "A lightweight way to throttle events and callbacks using requestAnimationFrame",
-  "main": "./dist/frame-throttle.js",
-  "types": "./dist/frame-throttle.d.ts",
+  "main": "dist/frame-throttle.js",
+  "types": "dist/frame-throttle.d.ts",
   "files": [
-    "./dist/frame-throttle.js",
-    "./dist/frame-throttle.d.ts"
+    "README.md",
+    "dist/frame-throttle.js",
+    "dist/frame-throttle.d.ts"
   ],
   "scripts": {
     "clean": "del-cli dist",
