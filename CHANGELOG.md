@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [2.0.0] - 2016-09-26
 ### Added
 - `frame-throttle.d.ts` - a [TypeScript declaration file] for `frame-throttle.js`
 ### Changed
@@ -46,5 +46,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [TypeScript]: http://www.typescriptlang.org
 [TypeScript declaration file]: https://www.typescriptlang.org/docs/handbook/writing-declaration-files.html
 
-[Unreleased]: https://github.com/pelotoncycle/frame-throttle/compare/v1.1.0...HEAD
+[2.0.0]: https://github.com/pelotoncycle/frame-throttle/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/pelotoncycle/frame-throttle/compare/v1.0.0...v1.1.0
