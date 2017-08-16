@@ -11,14 +11,14 @@
   ],
   "scripts": {
     "clean": "del-cli dist",
+    "compile": "npm run clean && tsc",
+    "coveralls": "npm run test-cov -- --report lcovonly && cat coverage/lcov.info | coveralls",
     "lint": "npm run lint-noforce -- --force",
     "lint-noforce": "tslint --project tsconfig.json",
-    "compile": "npm run clean && tsc",
     "pretest": "npm run lint-noforce && npm run compile",
     "prepublish": "npm test",
     "test": "tape dist/tests/*.tests.js",
-    "test-cov": "npm run pretest && istanbul cover tape -- dist/tests/*.tests.js",
-    "coveralls": "npm run test-cov -- --report lcovonly && cat coverage/lcov.info | coveralls"
+    "test-cov": "npm run pretest && istanbul cover tape -- dist/tests/*.tests.js"
   },
   "keywords": [
     "callback",
