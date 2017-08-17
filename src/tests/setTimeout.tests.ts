@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 import {test} from './helpers';
 import {throttle} from '../frame-throttle';
 
-let clock: Sinon.SinonFakeTimers;
+let clock: sinon.SinonFakeTimers;
 
 const FRAME_TIME = 1000 / 60;
 const frameTick = () => {
