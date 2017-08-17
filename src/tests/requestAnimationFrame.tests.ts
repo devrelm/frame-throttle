@@ -1,4 +1,4 @@
-import {jsdom} from 'jsdom';
+import {JSDOM} from 'jsdom';
 import * as sinon from 'sinon';
 import {test} from './helpers';
 import {throttle} from '../frame-throttle';
@@ -6,8 +6,8 @@ import {throttle} from '../frame-throttle';
 const mockRaf = require('mock-raf')();
 
 const setup = () => {
-    const document = jsdom('<html><body></body></html>');
-    global.window = document.defaultView;
+    const {window} = new JSDOM('<html><body></body></html>');
+    global.window = window;
     global.window.requestAnimationFrame = mockRaf.raf;
 };
 
