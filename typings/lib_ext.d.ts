@@ -1,5 +1,3 @@
-/// <reference path="node/node.d.ts" />
-
 interface Window {
     Event: typeof Event;
 }

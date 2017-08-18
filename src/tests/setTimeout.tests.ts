@@ -1,9 +1,9 @@
-import {jsdom} from 'jsdom';
+import {JSDOM} from 'jsdom';
 import * as sinon from 'sinon';
 import {test} from './helpers';
 import {throttle} from '../frame-throttle';
 
-let clock: Sinon.SinonFakeTimers;
+let clock: sinon.SinonFakeTimers;
 
 const FRAME_TIME = 1000 / 60;
 const frameTick = () => {
@@ -11,8 +11,8 @@ const frameTick = () => {
 };
 
 const setup = () => {
-    const document = jsdom('<html><body></body></html>');
-    global.window = document.defaultView;
+    const {window} = new JSDOM('<html><body></body></html>');
+    global.window = window;
     clock = sinon.useFakeTimers();
 };
 
