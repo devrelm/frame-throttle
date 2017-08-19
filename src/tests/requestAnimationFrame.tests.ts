@@ -20,7 +20,7 @@ test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
     setup();
     t.plan(3);
 
-    const rafSpy = sinon.stub(window, 'requestAnimationFrame');
+    const rafSpy = sinon.stub(window, 'requestAnimationFrame', window.requestAnimationFrame);
     const throttledListener = throttle(() => undefined);
     const event = 'resize';
 
@@ -38,6 +38,8 @@ test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
 
     t.equal(rafSpy.callCount, 1,
         'does not call requestAnimationFrame again upon second event dispatch');
+
+    rafSpy.restore();
 }, teardown);
 
 test('waits until the animation frame to call the callback', (t) => {
