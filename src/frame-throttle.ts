@@ -1,9 +1,9 @@
 export type CallbackFunction = (...args: any[]) => void;
 
 export const throttle = (callback: CallbackFunction): CallbackFunction => {
-    let running = false;
-    function resetRunning() {
-        running = false;
+    let waiting = false;
+    function resetWaiting() {
+        waiting = false;
     }
 
     let callbackThis: any;
@@ -12,19 +12,19 @@ export const throttle = (callback: CallbackFunction): CallbackFunction => {
         callbackThis = this;
         args = arguments;
 
-        if (running) {
+        if (waiting) {
             return;
         }
-        running = true;
+        waiting = true;
 
         if ('requestAnimationFrame' in window) {
             window.requestAnimationFrame(() => {
                 callback.apply(callbackThis, args);
-                resetRunning();
+                resetWaiting();
             });
         } else {
             callback.apply(callbackThis, args);
-            window.setTimeout(resetRunning, 1000 / 60); // 60 fps
+            window.setTimeout(resetWaiting, 1000 / 60); // 60 fps
         }
     };
 };
