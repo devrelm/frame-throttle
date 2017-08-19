@@ -1,9 +1,10 @@
 import {JSDOM} from 'jsdom';
+import * as MockRaf from 'mock-raf';
 import * as sinon from 'sinon';
 import {test} from './helpers';
 import {throttle} from '../frame-throttle';
 
-const mockRaf = require('mock-raf')();
+const mockRaf = MockRaf();
 
 const setup = () => {
     const {window} = new JSDOM('<html><body></body></html>');
