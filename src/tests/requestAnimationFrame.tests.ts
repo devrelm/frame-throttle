@@ -23,7 +23,6 @@ test('calls requestAnimationFrame once for multiple event occurrences', (t) => {
     const rafSpy = sinon.stub(window, 'requestAnimationFrame');
     const throttledListener = throttle(() => undefined);
     const event = 'resize';
-    rafSpy.reset();
 
     window.addEventListener(event, throttledListener);
 
@@ -202,6 +201,54 @@ test('passes the throttled listener context as the listener context', (t) => {
 
     t.equal(listener.getCall(0).thisValue, id,
         'listener is called with the context of the throttled listener');
+}, teardown);
+
+test('multiple throttled listeners bound from the same source are throttled separately', t => {
+    setup();
+    t.plan(7);
+
+    const rafSpy = sinon.stub(window, 'requestAnimationFrame', window.requestAnimationFrame);
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const id1 = {};
+    const id2 = {};
+    const boundThrottledListener1 = throttledListener.bind(id1);
+    const boundThrottledListener2 = throttledListener.bind(id2);
+
+    throttledListener();
+
+    t.equal(rafSpy.callCount, 1,
+        'raf is called once for the unbound listener');
+
+    throttledListener();
+
+    t.equal(rafSpy.callCount, 1,
+        'raf is called _only_ once for the unbound listener');
+
+    boundThrottledListener1();
+
+    t.equal(rafSpy.callCount, 2,
+        'raf is called once for the first bound listener');
+
+    boundThrottledListener1();
+
+    t.equal(rafSpy.callCount, 2,
+        'raf is called _only_ once for the first bound listener');
+
+    boundThrottledListener2();
+
+    t.equal(rafSpy.callCount, 3,
+        'raf is called once for the second bound listener');
+
+    boundThrottledListener2();
+
+    t.equal(rafSpy.callCount, 3,
+        'raf is called _only_ once for the second bound listener');
+
+    mockRaf.step();
+
+    t.equal(listener.callCount, 3,
+        'listener is called once for each bound and unbound throttled listener');
 }, teardown);
 
 test('throttles plain calls to the callback', (t) => {

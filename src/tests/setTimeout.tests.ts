@@ -174,7 +174,7 @@ test('passes the event object to the original listener', (t) => {
         'listener called with the provided event object');
 }, teardown);
 
-test('passes the latest event object to the original listener', (t) => {
+test('passes the first event object to the original listener', (t) => {
     setup();
     t.plan(2);
 
@@ -214,6 +214,75 @@ test('passes the throttled listener context as the listener context', (t) => {
 
     t.equal(listener.getCall(0).thisValue, id,
         'listener is called with the context of the throttled listener');
+}, teardown);
+
+test('multiple throttled listeners bound from the same source are throttled separately', t => {
+    setup();
+    t.plan(12);
+
+    const setTimeoutStub = sinon.stub(window, 'setTimeout', clock.setTimeout);
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const id1 = {};
+    const id2 = {};
+    const boundThrottledListener1 = throttledListener.bind(id1);
+    const boundThrottledListener2 = throttledListener.bind(id2);
+
+    throttledListener();
+
+    t.equal(setTimeoutStub.callCount, 1,
+        'setTimeout is called once for the unbound listener');
+
+    throttledListener();
+
+    t.equal(setTimeoutStub.callCount, 1,
+        'setTimeout is called _only_ once for the unbound listener');
+
+    t.equal(listener.callCount, 1,
+        'listener is called once for the unbound listener');
+
+    boundThrottledListener1();
+
+    t.equal(setTimeoutStub.callCount, 2,
+        'setTimeout is called once for the first bound listener');
+
+    boundThrottledListener1();
+
+    t.equal(setTimeoutStub.callCount, 2,
+        'setTimeout is called _only_ once for the first bound listener');
+
+    t.equal(listener.callCount, 2,
+        'listener is called once for the first bound listener');
+
+    boundThrottledListener2();
+
+    t.equal(setTimeoutStub.callCount, 3,
+        'setTimeout is called once for the second bound listener');
+
+    boundThrottledListener2();
+
+    t.equal(setTimeoutStub.callCount, 3,
+        'setTimeout is called _only_ once for the second bound listener');
+
+    t.equal(listener.callCount, 3,
+        'listener is called once for the second bound listener');
+
+    clock.tick(FRAME_TIME);
+
+    throttledListener();
+
+    t.equal(setTimeoutStub.callCount, 4,
+        'setTimeout is called again for the unbound listener after 1/60th second');
+
+    boundThrottledListener1();
+
+    t.equal(setTimeoutStub.callCount, 5,
+        'setTimeout is called again for the first bound listener after 1/60th second');
+
+    boundThrottledListener2();
+
+    t.equal(setTimeoutStub.callCount, 6,
+        'setTimeout is called again for the second bound listener after 1/60th second');
 }, teardown);
 
 test('throttles plain calls to the callback', (t) => {
