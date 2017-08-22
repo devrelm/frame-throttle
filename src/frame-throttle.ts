@@ -1,8 +1,6 @@
-export type CallbackFunction = (...args: any[]) => void;
-
-export const throttle = (callback: CallbackFunction): CallbackFunction => {
+export const throttle = <T extends Function>(callback: T): T => {
     const wrapperFactory = (wrapperContext: any) =>
-        function (cbThis: any, cb: CallbackFunction, ...args: any[]) {
+        function (cbThis: any, cb: T, ...args: any[]) {
             const resetWaiting = () => {
                 this.waiting = false;
             };
@@ -24,7 +22,7 @@ export const throttle = (callback: CallbackFunction): CallbackFunction => {
                 cb.apply(this.callbackThis, this.args);
                 window.setTimeout(resetWaiting, 1000 / 60); // 60 fps
             }
-        }.bind(wrapperContext) as CallbackFunction;
+        }.bind(wrapperContext) as T;
 
     const wrapper = wrapperFactory({});
     const throttledCallback = function (...args: any[]) {
@@ -38,5 +36,5 @@ export const throttle = (callback: CallbackFunction): CallbackFunction => {
         return (...args: any[]) => newWrapper(thisArg, callback, ...argArray, ...args);
     };
 
-    return throttledCallback;
+    return throttledCallback as any as T;
 };
