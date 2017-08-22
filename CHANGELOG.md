@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## UNRELEASED
+### Fixed
+- Binding a throttled listener with `.bind()` resulted in both the bound and
+  unbound listeners being throttled together.
+
+  For instance, in the following scenario, `listener` was only being called once:
+  ```js
+  var throttledListener = throttle(listener);
+  var boundThrottledListener1 = throttledListener.bind(someContext);
+  var boundThrottledListener2 = throttledListener.bind(anotherContext);
+
+  throttledListener();
+  boundThrottledListener1();
+  boundThrottledListener2();
+  ```
+
 ## [2.0.1] - 2016-09-26
 ### Fixed
 - `package.json` was misconfigured and didn't include the correct files
@@ -17,12 +33,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Moved main file from base directory to `dist` directory
 - `throttle` method is now a module member rather than the entire module.
   This means that you must now use:
-  ```
+  ```js
   // Correct
   var throttle = require('frame-throttle').throttle;
   ```
   rather than
-  ```
+  ```js
   // Wrong!
   var throttle = require('frame-throttle');
   ```
