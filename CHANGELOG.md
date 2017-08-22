@@ -19,6 +19,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   boundThrottledListener2();
   ```
 
+### Changed
+- Updated types to use generics; `throttle` will now return a function
+  of the same type it was passed.
+
 ## [2.0.1] - 2016-09-26
 ### Fixed
 - `package.json` was misconfigured and didn't include the correct files
