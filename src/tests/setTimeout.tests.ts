@@ -311,3 +311,149 @@ test('throttles plain calls to the callback', (t) => {
     t.false(callback.called,
         'callback is not called after 1/60 sec, without calling the throttled callback');
 }, teardown);
+
+test('calling `.apply` does not bypass the throttle', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const context1 = {};
+
+    throttledListener();
+
+    t.equal(listener.callCount, 1,
+        'listener is called once for the base listener');
+
+    throttledListener.apply(context1);
+
+    t.equal(listener.callCount, 1,
+        'raf is not called when `apply` called with a separate context after already waiting');
+}, teardown);
+
+test('calling `.apply` passes the context and args to the listener', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const context1 = {};
+    const arg1 = {};
+    const arg2 = {};
+
+    throttledListener.apply(context1, [arg1, arg2]);
+
+    t.strictEquals(listener.getCall(0).thisValue, context1,
+        'listener is called with the passed context');
+
+    t.true(listener.calledWithExactly(arg1, arg2),
+        'listener is called with the passed args');
+}, teardown);
+
+test('calling `.apply` passes the _first_ context and args to the listener', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const context1 = {context: 1};
+    const context2 = {context: 2};
+    const argA1 = {arg: 'a1'};
+    const argA2 = {arg: 'a2'};
+    const argB1 = {arg: 'b1'};
+    const argB2 = {arg: 'b2'};
+
+    throttledListener.apply(context1, [argA1, argA2]);
+    throttledListener.apply(context2, [argB1, argB2]);
+
+    t.strictEquals(listener.getCall(0).thisValue, context1,
+        'listener is called with the first context');
+
+    t.true(listener.calledWithExactly(argA1, argA2),
+        'listener is called with the first args');
+}, teardown);
+
+test('calling `.bind` with arguments prepends those arguments to the final call', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const context1 = {context: 1};
+    const argA1 = {arg: 'a1'};
+    const argA2 = {arg: 'a2'};
+    const argB1 = {arg: 'b1'};
+    const argB2 = {arg: 'b2'};
+
+    const boundThrottledListener = throttledListener.bind(context1, argA1, argA2);
+    boundThrottledListener(argB1, argB2);
+
+    t.strictEqual(listener.getCall(0).thisValue, context1,
+        'listener is called with the correct context');
+
+    t.deepEquals(listener.getCall(0).args, [argA1, argA2, argB1, argB2],
+        'listener is called with the combined args');
+}, teardown);
+
+test('calling `.bind` with no arguments adds no extra arguments', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const context1 = {context: 1};
+    const arg1 = {arg: '1'};
+    const arg2 = {arg: '2'};
+
+    const boundThrottledListener = throttledListener.bind(context1);
+    boundThrottledListener(arg1, arg2);
+
+    t.strictEqual(listener.getCall(0).thisValue, context1,
+        'listener is called with the correct context');
+
+    t.deepEquals(listener.getCall(0).args, [arg1, arg2],
+        'listener is called with the combined args');
+}, teardown);
+
+test('calling `.bind` with arguments adds no extra arguments', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const context1 = {context: 1};
+    const arg1 = {arg: '1'};
+    const arg2 = {arg: '2'};
+
+    const boundThrottledListener = throttledListener.bind(context1, arg1, arg2);
+    boundThrottledListener();
+
+    t.strictEqual(listener.getCall(0).thisValue, context1,
+        'listener is called with the correct context');
+
+    t.deepEquals(listener.getCall(0).args, [arg1, arg2],
+        'listener is called with the combined args');
+}, teardown);
+
+test('calling `.bind` followed by `.apply` correctly combines arguments', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const context1 = {context: 1};
+    const context2 = {context: 1};
+    const argA1 = {arg: 'a1'};
+    const argA2 = {arg: 'a2'};
+    const argB1 = {arg: 'b1'};
+    const argB2 = {arg: 'b2'};
+
+    const boundThrottledListener = throttledListener.bind(context1, argA1, argA2);
+    boundThrottledListener.apply(context2, [argB1, argB2]);
+
+    t.strictEqual(listener.getCall(0).thisValue, context1,
+        'listener is called with the correct context');
+
+    t.deepEquals(listener.getCall(0).args, [argA1, argA2, argB1, argB2],
+        'listener is called with the combined args');
+}, teardown);
