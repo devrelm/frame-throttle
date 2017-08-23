@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## UNRELEASED
+### Changed
+- Updated types to use generics; `throttle` will now return a function
+  of the same type it was passed.
+
 ### Fixed
 - Binding a throttled listener with `.bind()` resulted in both the bound and
   unbound listeners being throttled together.
@@ -18,10 +22,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   boundThrottledListener1();
   boundThrottledListener2();
   ```
-
-### Changed
-- Updated types to use generics; `throttle` will now return a function
-  of the same type it was passed.
 
 ## [2.0.1] - 2016-09-26
 ### Fixed
