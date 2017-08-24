@@ -39,23 +39,21 @@ const wrapperFactory = function (wrapperContext: any) {
     return wrapper as Cancellable<typeof wrapper>;
 };
 
-export const throttle = <T extends Function>(callback: T): Cancellable<T> => {
+const throttleFactory = <T extends Function>(callback: T, thisArg?: any, ...argArray: any[]) => {
     const wrapper = wrapperFactory({});
     const throttledCallback = function (...args: any[]) {
-        wrapper(this, callback, ...args);
+        wrapper(thisArg || this, callback, ...argArray, ...args);
     } as any as Cancellable<T>;
     throttledCallback.cancel = () => wrapper.cancel();
+    return throttledCallback;
+};
 
-    // Override `bind()` to bind the callback, which requires creating a new
-    // wrapper with separate 'waiting' context
-    throttledCallback.bind = (thisArg: any, ...argArray: any[]) => {
-        const newWrapper = wrapperFactory({});
-        const newThrottledCallback = function (...args: any[]) {
-            return newWrapper(thisArg, callback, ...argArray, ...args);
-        } as any as Cancellable<T>;
-        newThrottledCallback.cancel = () => newWrapper.cancel();
-        return newThrottledCallback;
-    };
+export const throttle = <T extends Function>(callback: T): Cancellable<T> => {
+    const throttledCallback = throttleFactory(callback);
+
+    // Override `bind()` to create a new throttled callback, otherwise both
+    // the unbound and bound callbacks will have the same scope.
+    throttledCallback.bind = throttleFactory.bind(null, callback);
 
     return throttledCallback;
 };
