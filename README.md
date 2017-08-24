@@ -52,6 +52,46 @@ The callback will be called once during the next animation frame using
 then the callback will be called immediately, and `setTimeout` will be used to
 ignore further calls for 1/60th of a second.
 
+## Examples
+
+### `.cancel()`
+
+Throttled functions can be canceled, which is useful for cleaning up after
+yourself when you are no longer listening to an event.
+
+```js
+var throttledListener = throttle(listener);
+window.addEventListener('resize', throttledListener);
+submitButton.addEventListener('click', () => {
+    window.removeEventListener('resize', throttledListener);
+    // prevent any queued calls from executing on the next animation frame:
+    throttledListener.cancel();
+})
+```
+
+### Binding
+
+Throttled functions can be bound, and pass their context and args to your listener:
+
+```js
+// count the number of times that listener is called for each event type
+var counterObj = {
+    resize: 0,
+    scroll: 0,
+};
+var eventCounter = function (event) {
+    this[event] += 1;
+};
+var throttledCounter = throttle(eventCounter);
+window.addEventListener('resize', throttledCounter.bind(counterObj, 'resize'));
+window.addEventListener('scroll', throttledCounter.bind(counterObj, 'scroll'));
+```
+
+Each bound and unbound instance is throttled separately. This means that in the
+above example, if the resize and scroll events were fired within the same
+animation frame, both `counterObj.resize` and `counterObj.scroll` would be
+incremented.
+
 ## Gotchas
 
 ### Fallback to `setTimeout`
