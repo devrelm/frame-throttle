@@ -350,6 +350,24 @@ test('calling `.apply` passes the context and args to the listener', t => {
         'listener is called with the passed args');
 }, teardown);
 
+test('calling `.apply` with an undefined context passes the context and args to the listener', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const arg1 = {};
+    const arg2 = {};
+
+    throttledListener.apply(undefined, [arg1, arg2]);
+
+    t.strictEquals(listener.getCall(0).thisValue, undefined,
+        'listener is called with the passed context');
+
+    t.true(listener.calledWithExactly(arg1, arg2),
+        'listener is called with the passed args');
+}, teardown);
+
 test('calling `.apply` passes the _first_ context and args to the listener', t => {
     setup();
     t.plan(2);
