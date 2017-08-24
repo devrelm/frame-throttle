@@ -1,40 +1,70 @@
-export const throttle = <T extends Function>(callback: T): T => {
-    const wrapperFactory = (wrapperContext: any) =>
-        function (cbThis: any, cb: T, ...args: any[]) {
-            const resetWaiting = () => {
-                this.waiting = false;
-            };
+export type Cancellable<T extends Function>
+    = T
+    & {
+        /**
+         * Cancel the next scheduled invocation of the callback.
+         */
+        cancel(): void;
+    }
 
-            this.callbackThis = cbThis;
-            this.args = args;
+const wrapperFactory = function (wrapperContext: any) {
+    const resetCancelToken = () => {
+        wrapperContext.cancelToken = false;
+    };
 
-            if (this.waiting) {
-                return;
-            }
-            this.waiting = true;
+    const wrapper = <T extends Function>(cbThis: any, cb: T, ...args: any[]) => {
+        wrapperContext.callbackThis = cbThis;
+        wrapperContext.args = args;
 
-            if ('requestAnimationFrame' in window) {
-                window.requestAnimationFrame(() => {
-                    cb.apply(this.callbackThis, this.args);
-                    resetWaiting();
-                });
-            } else {
-                cb.apply(this.callbackThis, this.args);
-                window.setTimeout(resetWaiting, 1000 / 60); // 60 fps
-            }
-        }.bind(wrapperContext) as T;
+        if (wrapperContext.cancelToken) {
+            return;
+        }
 
+        if ('requestAnimationFrame' in window) {
+            wrapperContext.cancelToken = window.requestAnimationFrame(() => {
+                cb.apply(wrapperContext.callbackThis, wrapperContext.args);
+                resetCancelToken();
+            });
+        } else {
+            cb.apply(wrapperContext.callbackThis, wrapperContext.args);
+            wrapperContext.cancelToken = window.setTimeout(resetCancelToken, 1000 / 60); // 60 fps
+        }
+    };
+
+    (wrapper as Cancellable<typeof wrapper>).cancel = () => {
+        if ('requestAnimationFrame' in window) {
+            window.cancelAnimationFrame(wrapperContext.cancelToken);
+        }
+        window.clearTimeout(wrapperContext.cancelToken);
+        resetCancelToken();
+    };
+
+    return wrapper as Cancellable<typeof wrapper>;
+};
+
+const throttleFactory = function <T extends Function>(callback: T, thisArg?: any, ...argArray: any[]) {
     const wrapper = wrapperFactory({});
+    const argCount = arguments.length;
     const throttledCallback = function (...args: any[]) {
-        wrapper(this, callback, ...args);
-    };
+        wrapper(argCount > 1 ? thisArg : this, callback, ...argArray, ...args);
+    } as any as Cancellable<T>;
+    throttledCallback.cancel = () => wrapper.cancel();
+    return throttledCallback;
+};
 
-    // Override `bind()` to bind the callback, which requires creating a new
-    // wrapper with separate 'waiting' context
-    throttledCallback.bind = (thisArg: any, ...argArray: any[]) => {
-        const newWrapper = wrapperFactory({});
-        return (...args: any[]) => newWrapper(thisArg, callback, ...argArray, ...args);
-    };
+/**
+ * Returns a throttled function which runs once per rendered frame using
+ * requestAnimationFrame. If window.requestAnimationFrame does not exist,
+ * the behavior will be approximated using setTimeout.
+ *
+ * @param callback the function to be throttled
+ */
+export const throttle = <T extends Function>(callback: T): Cancellable<T> => {
+    const throttledCallback = throttleFactory(callback);
 
-    return throttledCallback as any as T;
+    // Override `bind()` to create a new throttled callback, otherwise both
+    // the unbound and bound callbacks will have the same scope.
+    throttledCallback.bind = throttleFactory.bind(null, callback);
+
+    return throttledCallback;
 };

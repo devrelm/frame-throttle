@@ -350,6 +350,24 @@ test('calling `.apply` passes the context and args to the listener', t => {
         'listener is called with the passed args');
 }, teardown);
 
+test('calling `.apply` with an undefined context passes the context and args to the listener', t => {
+    setup();
+    t.plan(2);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const arg1 = {};
+    const arg2 = {};
+
+    throttledListener.apply(undefined, [arg1, arg2]);
+
+    t.strictEquals(listener.getCall(0).thisValue, undefined,
+        'listener is called with the passed context');
+
+    t.true(listener.calledWithExactly(arg1, arg2),
+        'listener is called with the passed args');
+}, teardown);
+
 test('calling `.apply` passes the _first_ context and args to the listener', t => {
     setup();
     t.plan(2);
@@ -456,4 +474,56 @@ test('calling `.bind` followed by `.apply` correctly combines arguments', t => {
 
     t.deepEquals(listener.getCall(0).args, [argA1, argA2, argB1, argB2],
         'listener is called with the combined args');
+}, teardown);
+
+test('calling `cancel` cancels the wait', t => {
+    setup();
+    t.plan(1);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+
+    throttledListener();
+
+    throttledListener.cancel();
+
+    throttledListener();
+
+    t.strictEqual(listener.callCount, 2,
+        'listener was called twice');
+}, teardown);
+
+test('calling `cancel` on a bound throttled listener does not cancel the original or others bound from it', t => {
+    setup();
+    t.plan(5);
+
+    const listener = sinon.spy();
+    const throttledListener = throttle(listener);
+    const context0 = {context: 0};
+    const context1 = {context: 1};
+    const context2 = {context: 1};
+    const boundThrottledListener1 = throttledListener.bind(context1);
+    const boundThrottledListener2 = throttledListener.bind(context2);
+
+    throttledListener.apply(context0);
+    boundThrottledListener1();
+    boundThrottledListener2();
+
+    boundThrottledListener1.cancel();
+
+    throttledListener.apply(context0);
+    boundThrottledListener1();
+    boundThrottledListener2();
+
+    t.strictEqual(listener.callCount, 4,
+        'listener was called four times');
+
+    t.strictEqual(listener.getCall(0).thisValue, context0,
+        'first call was from unbound throttled listener');
+    t.strictEqual(listener.getCall(1).thisValue, context1,
+        'second call was through first bound throttled listener');
+    t.strictEqual(listener.getCall(2).thisValue, context2,
+        'third call was through second bound throttled listener');
+    t.strictEqual(listener.getCall(3).thisValue, context1,
+        'fourth call was through first bound throttled listener');
 }, teardown);
