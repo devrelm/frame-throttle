@@ -49,6 +49,13 @@ const throttleFactory = function <T extends Function>(callback: T, thisArg?: any
     return throttledCallback;
 };
 
+/**
+ * Returns a throttled function which runs once per rendered frame using
+ * requestAnimationFrame. If window.requestAnimationFrame does not exist,
+ * the behavior will be approximated using setTimeout.
+ *
+ * @param callback the function to be throttled
+ */
 export const throttle = <T extends Function>(callback: T): Cancellable<T> => {
     const throttledCallback = throttleFactory(callback);
 
