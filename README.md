@@ -54,6 +54,8 @@ ignore further calls for 1/60th of a second.
 
 ## Gotchas
 
+### Fallback to `setTimeout`
+
 There is a slight difference in how `frame-throttle` works that depends on
 whether or not `requestAnimationFrame` exists.
 
@@ -71,6 +73,13 @@ a small possibility that the information you calculate your changes off of will
 be out of date by the time the next frame renders. The arguments to your callback
 will be the arguments of the first call to the throttled callback, and will
 be reset 1/60th of a second after the first call to the throttled callback.
+
+### `cancel()`
+
+`cancel()` cancels only the next scheduled run of the listener. If your
+throttled listener is called again after calling `cancel()`, your listener
+will be scheduled to run again during the next animation frame (or immediately
+if `window.requestAnimationFrame` does not exist.
 
 
 [travis-image]: https://travis-ci.org/pelotoncycle/frame-throttle.svg?branch=master
