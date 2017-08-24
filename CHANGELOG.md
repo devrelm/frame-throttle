@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## UNRELEASED
+### Added
+- Throttled listeners can now be canceled (useful for cleanup):
+  ```js
+  var throttledListener = throttle(listener);
+  window.addEventListener('resize', throttledListener);
+  submitButton.addEventListener('click', () => {
+    window.removeEventListener('resize', throttledListener);
+    // prevent any queued calls from executing on the next animation frame:
+    throttledListener.cancel();
+  })
+  ```
+
 ### Changed
 - Updated types to use generics; `throttle` will now return a function
   of the same type it was passed.
