@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Updated types to use generics; `throttle` will now return a function
   of the same type it was passed.
+- frame-throttle now runs in strict mode
 
 ### Fixed
 - Binding a throttled listener with `.bind()` resulted in both the bound and

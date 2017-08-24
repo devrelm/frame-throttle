@@ -39,10 +39,11 @@ const wrapperFactory = function (wrapperContext: any) {
     return wrapper as Cancellable<typeof wrapper>;
 };
 
-const throttleFactory = <T extends Function>(callback: T, thisArg?: any, ...argArray: any[]) => {
+const throttleFactory = function <T extends Function>(callback: T, thisArg?: any, ...argArray: any[]) {
     const wrapper = wrapperFactory({});
+    const argCount = arguments.length;
     const throttledCallback = function (...args: any[]) {
-        wrapper(thisArg || this, callback, ...argArray, ...args);
+        wrapper(argCount > 1 ? thisArg : this, callback, ...argArray, ...args);
     } as any as Cancellable<T>;
     throttledCallback.cancel = () => wrapper.cancel();
     return throttledCallback;
