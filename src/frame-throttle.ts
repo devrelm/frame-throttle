@@ -1,6 +1,9 @@
 export type Cancellable<T extends Function>
     = T
     & {
+        /**
+         * Cancel the next scheduled invocation of the callback.
+         */
         cancel(): void;
     }
 
