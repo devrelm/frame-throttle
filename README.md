@@ -33,7 +33,7 @@ To use _frame-throttle_, simply create your callback, and pass it to the
 pass to any method that would take your original callback,
 such as `addEventListener` and `removeEventListener`:
 
-```
+```js
 var throttle = require('frame-throttle').throttle;
 
 var callback = function(e) {
@@ -46,8 +46,8 @@ window.addEventListener('resize', throttledCallback);
 window.removeEventListener('resize', throttledCallback);
 ```
 
-You can use `throttle` to throttle any callback, not just event listeners.
-The callback will be called once during the next animation frame using
+You can use `throttle` to throttle any function, not just event listeners.
+The function will be called once during the next animation frame using
 `requestAnimationFrame` if it exists. If `requestAnimationFrame` does not exist,
 then the callback will be called immediately, and `setTimeout` will be used to
 ignore further calls for 1/60th of a second.
@@ -96,8 +96,8 @@ incremented.
 
 ### Fallback to `setTimeout`
 
-There is a slight difference in how `frame-throttle` works that depends on
-whether or not `requestAnimationFrame` exists.
+There are some slight differences in how `frame-throttle` behaves, depending on
+whether or not `window.requestAnimationFrame` exists.
 
 If `requestAnimationFrame` exists, then the callback will be called during the
 animation-frame callback section of the browser's next [browsing context event loop].
