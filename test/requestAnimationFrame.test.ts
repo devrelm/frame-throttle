@@ -144,27 +144,6 @@ describe('throttle with requestAnimationFrame', () => {
     expect(listener).toHaveBeenCalledWith(eventObject);
   });
 
-  it('passes the latest event object to the original listener', () => {
-    const listener = jest.fn();
-    const throttledListener = throttle(listener);
-
-    window.addEventListener('resize', throttledListener);
-    const eventObject = new Event('resize');
-    window.dispatchEvent(eventObject);
-
-    window.addEventListener('scroll', throttledListener);
-    const secondEventObject = new Event('scroll');
-    window.dispatchEvent(secondEventObject);
-
-    // sanity check - the event objects are not equal
-    expect(eventObject).not.toEqual(secondEventObject);
-
-    mockRaf.step();
-
-    // listener is called with the second-provided event object
-    expect(listener).toHaveBeenCalledWith(secondEventObject);
-  });
-
   it('passes the throttled listener context as the listener context', () => {
     const listener = jest.fn();
     const id = {};
