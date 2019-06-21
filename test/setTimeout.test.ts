@@ -5,7 +5,18 @@ const frameTick = () => {
   jest.advanceTimersByTime(FRAME_TIME);
 };
 
+let requestAnimationFrame: any;
+
 describe('throttle with setTimeout', () => {
+  beforeAll(() => {
+    requestAnimationFrame = window.requestAnimationFrame;
+    delete window.requestAnimationFrame;
+  });
+
+  afterAll(() => {
+    window.requestAnimationFrame = requestAnimationFrame;
+  });
+
   beforeEach(() => {
     jest.useFakeTimers();
   });
