@@ -146,7 +146,7 @@ describe('throttle with requestAnimationFrame', () => {
 
   it('passes the throttled listener context as the listener context', () => {
     const listener = jest.fn();
-    const id = {};
+    const id = { test: 'context' };
     const throttledListener = throttle(listener).bind(id);
     const event = 'resize';
     const eventObject = new Event(event);
@@ -162,8 +162,8 @@ describe('throttle with requestAnimationFrame', () => {
   it('multiple throttled listeners bound from the same source are throttled separately', () => {
     const listener = jest.fn();
     const throttledListener = throttle(listener);
-    const id1 = {};
-    const id2 = {};
+    const id1 = { test: 'context1' };
+    const id2 = { test: 'context2' };
     const boundThrottledListener1 = throttledListener.bind(id1);
     const boundThrottledListener2 = throttledListener.bind(id2);
 
@@ -227,7 +227,7 @@ describe('throttle with requestAnimationFrame', () => {
   it('calling `.apply` does not bypass the throttle', () => {
     const listener = jest.fn();
     const throttledListener = throttle(listener);
-    const context1 = {};
+    const context1 = { test: 'context' };
 
     throttledListener();
 

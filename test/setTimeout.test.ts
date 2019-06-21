@@ -171,7 +171,7 @@ describe('throttle with setTimeout', () => {
 
   it('passes the throttled callback context as the callback context', () => {
     const callback = jest.fn();
-    const id = {};
+    const id = { test: 'context' };
     const throttledListener = throttle(callback).bind(id);
     const event = 'resize';
     const eventObject = new Event(event);
@@ -187,8 +187,8 @@ describe('throttle with setTimeout', () => {
   it('multiple throttled listeners bound from the same source are throttled separately', () => {
     const callback = jest.fn();
     const throttledListener = throttle(callback);
-    const id1 = {};
-    const id2 = {};
+    const id1 = { test: 'context1' };
+    const id2 = { test: 'context2' };
     const boundThrottledListener1 = throttledListener.bind(id1);
     const boundThrottledListener2 = throttledListener.bind(id2);
 
@@ -249,9 +249,9 @@ describe('throttle with setTimeout', () => {
     expect(setTimeout).toHaveBeenCalledTimes(6);
   });
 
-  it('throttles plain calls to the callback', () => {
+  it('passes first-passed arguments to the callback', () => {
     const callback = jest.fn();
-    const firstCallArgument = {};
+    const firstCallArgument = 1;
     const throttledCallback = throttle(callback);
 
     throttledCallback(firstCallArgument);
@@ -276,14 +276,14 @@ describe('throttle with setTimeout', () => {
   it('calling `.apply` does not bypass the throttle', () => {
     const callback = jest.fn();
     const throttledListener = throttle(callback);
-    const context1 = {};
+    const context = { test: 'context' };
 
     throttledListener();
 
     // callback is called once for the base callback
     expect(callback).toHaveBeenCalledTimes(1);
 
-    throttledListener.apply(context1);
+    throttledListener.apply(context);
 
     // raf is not called when `apply` called with a separate context after already waiting
     expect(callback).toHaveBeenCalledTimes(1);
@@ -292,14 +292,14 @@ describe('throttle with setTimeout', () => {
   it('calling `.apply` passes the context and args to the callback', () => {
     const callback = jest.fn();
     const throttledListener = throttle(callback);
-    const context1 = {};
-    const arg1 = {};
-    const arg2 = {};
+    const context = { test: 'context' };
+    const arg1 = 1;
+    const arg2 = 2;
 
-    throttledListener.apply(context1, [arg1, arg2]);
+    throttledListener.apply(context, [arg1, arg2]);
 
     // callback is called with the passed context
-    expect(callback.mock.instances[0]).toBe(context1);
+    expect(callback.mock.instances[0]).toBe(context);
 
     // callback is called with the passed args
     expect(callback).toHaveBeenCalledWith(arg1, arg2);
@@ -308,8 +308,8 @@ describe('throttle with setTimeout', () => {
   it('calling `.apply` with an undefined context passes the context and args to the callback', () => {
     const callback = jest.fn();
     const throttledListener = throttle(callback);
-    const arg1 = {};
-    const arg2 = {};
+    const arg1 = 1;
+    const arg2 = 2;
 
     throttledListener.apply(undefined, [arg1, arg2]);
 
