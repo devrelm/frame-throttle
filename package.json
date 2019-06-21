@@ -2,23 +2,17 @@
   "name": "frame-throttle",
   "version": "3.0.0",
   "description": "A lightweight way to throttle events and callbacks using requestAnimationFrame",
-  "main": "dist/frame-throttle.js",
-  "types": "dist/frame-throttle.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/frame-throttle.esm.js",
+  "typings": "dist/index.d.ts",
   "files": [
     "README.md",
-    "dist/frame-throttle.js",
-    "dist/frame-throttle.d.ts"
+    "dist"
   ],
   "scripts": {
-    "clean": "del-cli dist",
-    "compile": "npm run clean && tsc",
-    "coveralls": "npm run test-cov -- --report lcovonly && cat coverage/lcov.info | coveralls",
-    "lint": "npm run lint-noforce -- --force",
-    "lint-noforce": "tslint --project tsconfig.json",
-    "pretest": "npm run lint-noforce && npm run compile",
-    "prepublish": "npm test",
-    "test": "tape dist/tests/*.tests.js",
-    "test-cov": "npm run pretest && istanbul cover tape -- dist/tests/*.tests.js"
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test"
   },
   "keywords": [
     "callback",
@@ -40,19 +34,21 @@
     "url": "https://github.com/pelotoncycle/frame-throttle/issues"
   },
   "homepage": "https://github.com/pelotoncycle/frame-throttle#readme",
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
   "devDependencies": {
-    "@types/jsdom": "11.0.1",
+    "@types/jest": "^24.0.15",
     "@types/mock-raf": "1.0.2",
-    "@types/sinon": "^1.16.31",
-    "coveralls": "^2.11.12",
-    "del-cli": "^0.2.0",
-    "istanbul": "0.4.5",
-    "jsdom": "11.1.0",
+    "husky": "^2.4.1",
     "mock-raf": "1.0.0",
-    "sinon": "^1.17.5",
-    "tape": "^4.6.0",
-    "tape-catch": "^1.0.6",
-    "tslint": "^3.15.1",
-    "typescript": "2.4.2"
+    "prettier": "^1.18.2",
+    "pretty-quick": "^1.11.1",
+    "tsdx": "^0.7.2",
+    "tslib": "^1.10.0",
+    "typescript": "^3.5.2"
   }
 }

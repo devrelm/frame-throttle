@@ -1,5 +1,5 @@
 import * as test from 'tape-catch';
-import {throttle} from '../frame-throttle';
+import {throttle} from '../src';
 
 test('requiring throttle', (t) => {
     t.plan(2);

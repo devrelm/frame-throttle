@@ -1,4 +1,4 @@
-/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../typings/tsd.d.ts" />
 import * as tape from 'tape-catch';
 
 export const test = (description: string, callback: tape.TestCase, final: () => void) => {

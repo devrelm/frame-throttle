@@ -2,7 +2,7 @@ import {JSDOM} from 'jsdom';
 import * as MockRaf from 'mock-raf';
 import * as sinon from 'sinon';
 import {test} from './helpers';
-import {throttle} from '../frame-throttle';
+import {throttle} from '../dist';
 
 const mockRaf = MockRaf();
 
