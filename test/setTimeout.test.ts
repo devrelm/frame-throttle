@@ -159,27 +159,6 @@ describe('throttle with setTimeout', () => {
     expect(callback).toHaveBeenCalledWith(eventObject);
   });
 
-  it('passes the first event object to the original callback', () => {
-    const callback = jest.fn();
-    const throttledListener = throttle(callback);
-
-    window.addEventListener('resize', throttledListener);
-    const eventObject = new Event('resize');
-    window.dispatchEvent(eventObject);
-
-    window.addEventListener('scroll', throttledListener);
-    const secondEventObject = new Event('scroll');
-    window.dispatchEvent(secondEventObject);
-
-    // sanity check - the event objects are not equal
-    expect(eventObject).not.toEqual(secondEventObject);
-
-    frameTick();
-
-    // callback called with the first provided event object
-    expect(callback).toHaveBeenCalledWith(eventObject);
-  });
-
   it('passes the throttled callback context as the callback context', () => {
     const callback = jest.fn();
     const id = { test: 'context' };
