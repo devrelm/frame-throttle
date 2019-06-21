@@ -34,6 +34,11 @@
     "url": "https://github.com/pelotoncycle/frame-throttle/issues"
   },
   "homepage": "https://github.com/pelotoncycle/frame-throttle#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
   "prettier": {
     "printWidth": 80,
     "semi": true,
