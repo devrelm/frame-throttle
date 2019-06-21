@@ -1,228 +1,192 @@
-import {JSDOM} from 'jsdom';
-import * as sinon from 'sinon';
-import {test} from './helpers';
-import {throttle} from '../frame-throttle';
-
-let clock: sinon.SinonFakeTimers;
+import { throttle } from '../src';
 
 const FRAME_TIME = 1000 / 60;
 const frameTick = () => {
-    clock.tick(FRAME_TIME);
+  jest.advanceTimersByTime(FRAME_TIME);
 };
 
-const setup = () => {
-    const {window} = new JSDOM('<html><body></body></html>');
-    global.window = window;
-    clock = sinon.useFakeTimers();
-};
+describe('throttle with setTimeout', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
 
-const teardown = () => {
-    delete global.window;
-    clock.restore();
-};
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
-test('calls setTimeout once for multiple event occurrences', (t) => {
-    t.plan(3);
-    setup();
-
-    const setTimeoutStub = sinon.stub(window, 'setTimeout', clock.setTimeout);
+  it('calls setTimeout once for multiple event occurrences', () => {
     const throttledListener = throttle(() => undefined);
     const event = 'resize';
 
     window.addEventListener(event, throttledListener);
 
-    t.equal(setTimeoutStub.callCount, 0,
-        'sanity check - setTimeout not called before event dispatch');
+    // sanity check - setTimeout not called before event dispatch
+    expect(setTimeout).toHaveBeenCalledTimes(0);
 
-    window.dispatchEvent(new window.Event(event));
+    window.dispatchEvent(new Event(event));
 
-    t.equal(setTimeoutStub.callCount, 1,
-        'calls setTimeout upon first event dispatch');
+    // calls setTimeout upon first event dispatch
+    expect(setTimeout).toHaveBeenCalledTimes(1);
 
-    window.dispatchEvent(new window.Event(event));
+    window.dispatchEvent(new Event(event));
 
-    t.equal(setTimeoutStub.callCount, 1,
-        'does not call setTimeout again upon second event dispatch');
-}, teardown);
+    // does not call setTimeout again upon second event dispatch
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+  });
 
-test('waits 1/60th of a second to call the callback', (t) => {
-    setup();
-    t.plan(4);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('waits 1/60th of a second to call the callback', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const event = 'resize';
 
     window.addEventListener(event, throttledListener);
 
-    t.equal(listener.callCount, 0,
-        'sanity check - listener not called before event dispatch');
+    // sanity check - callback not called before event dispatch
+    expect(callback).toHaveBeenCalledTimes(0);
 
-    window.dispatchEvent(new window.Event(event));
+    window.dispatchEvent(new Event(event));
 
-    t.equal(listener.callCount, 1,
-        'calls listener upon first event dispatch');
+    // calls callback upon first event dispatch
+    expect(callback).toHaveBeenCalledTimes(1);
 
-    listener.reset();
-    window.dispatchEvent(new window.Event(event));
-    clock.tick(FRAME_TIME - 1);
-    window.dispatchEvent(new window.Event(event));
+    callback.mockReset();
+    window.dispatchEvent(new Event(event));
+    jest.advanceTimersByTime(FRAME_TIME - 1);
+    window.dispatchEvent(new Event(event));
 
-    t.equal(listener.callCount, 0,
-        'does not call the listener again before 1/60th of a second');
+    // does not call the callback again before 1/60th of a second
+    expect(callback).toHaveBeenCalledTimes(0);
 
-    clock.tick(1);
+    jest.advanceTimersByTime(1);
 
-    t.equal(listener.callCount, 0,
-        'events fired prior to 1/60th sec do not set callbacks for after 1/60th sec');
-}, teardown);
+    // events fired prior to 1/60th sec do not set callbacks for after 1/60th sec
+    expect(callback).toHaveBeenCalledTimes(0);
+  });
 
-test('calls the listener multiple times for multiple event/frame cycles', (t) => {
-    setup();
-    t.plan(3);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('calls the callback multiple times for multiple event/frame cycles', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const event = 'resize';
 
     window.addEventListener(event, throttledListener);
 
-    t.equal(listener.callCount, 0,
-        'sanity check - listener not called before event dispatch');
+    // sanity check - callback not called before event dispatch
+    expect(callback).toHaveBeenCalledTimes(0);
 
-    window.dispatchEvent(new window.Event(event));
+    window.dispatchEvent(new Event(event));
     frameTick();
 
-    t.equals(listener.callCount, 1,
-        'listener is called during first event/frame cycle');
+    // callback is called during first event/frame cycle
+    expect(callback).toHaveBeenCalledTimes(1);
 
-    window.dispatchEvent(new window.Event(event));
+    window.dispatchEvent(new Event(event));
     frameTick();
 
-    t.equals(listener.callCount, 2,
-        'listener is called during second event/frame cycle');
-}, teardown);
+    // callback is called during second event/frame cycle
+    expect(callback).toHaveBeenCalledTimes(2);
+  });
 
-test('calls the listener once per event dispatch', (t) => {
-    setup();
-    t.plan(3);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('calls the callback once per event dispatch', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const event = 'resize';
 
     window.addEventListener(event, throttledListener);
 
-    t.equal(listener.callCount, 0,
-        'sanity check - listener not called before event dispatch');
+    // sanity check - callback not called before event dispatch
+    expect(callback).toHaveBeenCalledTimes(0);
 
-    window.dispatchEvent(new window.Event(event));
+    window.dispatchEvent(new Event(event));
     frameTick();
 
-    t.equal(listener.callCount, 1,
-        'listener is called during first event/frame cycle');
+    // callback is called during first event/frame cycle
+    expect(callback).toHaveBeenCalledTimes(1);
 
     frameTick();
 
-    t.equal(listener.callCount, 1,
-        'listener is not called during second frame without event');
-}, teardown);
+    // callback is not called during second frame without event
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 
-test('no longer calls listener after removeEventListener', (t) => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('no longer calls callback after removeEventListener', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const event = 'resize';
 
     window.addEventListener(event, throttledListener);
 
-    window.dispatchEvent(new window.Event(event));
+    window.dispatchEvent(new Event(event));
     frameTick();
 
-    t.equal(listener.callCount, 1,
-        'sanity check - listener called during first event/frame cycle');
+    // sanity check - callback called during first event/frame cycle
+    expect(callback).toHaveBeenCalledTimes(1);
 
     window.removeEventListener(event, throttledListener);
 
-    window.dispatchEvent(new window.Event(event));
+    window.dispatchEvent(new Event(event));
     frameTick();
 
-    t.equal(listener.callCount, 1,
-        'listener is not called during second cycle after throttled listener is removed');
-}, teardown);
+    // callback is not called during second cycle after throttled callback is removed
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 
-test('passes the event object to the original listener', (t) => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('passes the event object to the original callback', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const event = 'resize';
-    const eventObject = new window.Event(event);
+    const eventObject = new Event(event);
 
     window.addEventListener(event, throttledListener);
 
     window.dispatchEvent(eventObject);
     frameTick();
 
-    t.equal(listener.callCount, 1,
-        'sanity check - listener called during first event/frame cycle');
+    // sanity check - callback called during first event/frame cycle
+    expect(callback).toHaveBeenCalledTimes(1);
 
-    t.equal(listener.getCall(0).args[0], eventObject,
-        'listener called with the provided event object');
-}, teardown);
+    // callback called with the provided event object
+    expect(callback).toHaveBeenCalledWith(eventObject);
+  });
 
-test('passes the first event object to the original listener', (t) => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('passes the first event object to the original callback', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
 
     window.addEventListener('resize', throttledListener);
-    const eventObject = new window.Event('resize');
+    const eventObject = new Event('resize');
     window.dispatchEvent(eventObject);
 
     window.addEventListener('scroll', throttledListener);
-    const secondEventObject = new window.Event('scroll');
+    const secondEventObject = new Event('scroll');
     window.dispatchEvent(secondEventObject);
 
-    t.notEqual(eventObject, secondEventObject,
-        'sanity check - the event objects are not equal');
+    // sanity check - the event objects are not equal
+    expect(eventObject).not.toEqual(secondEventObject);
 
     frameTick();
 
-    t.equal(listener.getCall(0).args[0].type, eventObject.type,
-        'listener called with the first provided event object');
-}, teardown);
+    // callback called with the first provided event object
+    expect(callback).toHaveBeenCalledWith(eventObject);
+  });
 
-test('passes the throttled listener context as the listener context', (t) => {
-    setup();
-    t.plan(1);
-
-    const listener = sinon.spy();
+  it('passes the throttled callback context as the callback context', () => {
+    const callback = jest.fn();
     const id = {};
-    const throttledListener = throttle(listener).bind(id);
+    const throttledListener = throttle(callback).bind(id);
     const event = 'resize';
-    const eventObject = new window.Event(event);
+    const eventObject = new Event(event);
 
     window.addEventListener(event, throttledListener);
     window.dispatchEvent(eventObject);
     frameTick();
 
-    t.equal(listener.getCall(0).thisValue, id,
-        'listener is called with the context of the throttled listener');
-}, teardown);
+    // callback is called with the context of the throttled callback
+    expect(callback.mock.instances[0]).toBe(id);
+  });
 
-test('multiple throttled listeners bound from the same source are throttled separately', t => {
-    setup();
-    t.plan(12);
-
-    const setTimeoutStub = sinon.stub(window, 'setTimeout', clock.setTimeout);
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('multiple throttled listeners bound from the same source are throttled separately', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const id1 = {};
     const id2 = {};
     const boundThrottledListener1 = throttledListener.bind(id1);
@@ -230,258 +194,236 @@ test('multiple throttled listeners bound from the same source are throttled sepa
 
     throttledListener();
 
-    t.equal(setTimeoutStub.callCount, 1,
-        'setTimeout is called once for the unbound listener');
+    // setTimeout is called once for the unbound callback
+    expect(setTimeout).toHaveBeenCalledTimes(1);
 
     throttledListener();
 
-    t.equal(setTimeoutStub.callCount, 1,
-        'setTimeout is called _only_ once for the unbound listener');
+    // setTimeout is called _only_ once for the unbound callback
+    expect(setTimeout).toHaveBeenCalledTimes(1);
 
-    t.equal(listener.callCount, 1,
-        'listener is called once for the unbound listener');
-
-    boundThrottledListener1();
-
-    t.equal(setTimeoutStub.callCount, 2,
-        'setTimeout is called once for the first bound listener');
+    // callback is called once for the unbound callback
+    expect(callback).toHaveBeenCalledTimes(1);
 
     boundThrottledListener1();
 
-    t.equal(setTimeoutStub.callCount, 2,
-        'setTimeout is called _only_ once for the first bound listener');
+    // setTimeout is called once for the first bound callback
+    expect(setTimeout).toHaveBeenCalledTimes(2);
 
-    t.equal(listener.callCount, 2,
-        'listener is called once for the first bound listener');
+    boundThrottledListener1();
+
+    // setTimeout is called _only_ once for the first bound callback
+    expect(setTimeout).toHaveBeenCalledTimes(2);
+
+    // callback is called once for the first bound callback
+    expect(callback).toHaveBeenCalledTimes(2);
 
     boundThrottledListener2();
 
-    t.equal(setTimeoutStub.callCount, 3,
-        'setTimeout is called once for the second bound listener');
+    // setTimeout is called once for the second bound callback
+    expect(setTimeout).toHaveBeenCalledTimes(3);
 
     boundThrottledListener2();
 
-    t.equal(setTimeoutStub.callCount, 3,
-        'setTimeout is called _only_ once for the second bound listener');
+    // setTimeout is called _only_ once for the second bound callback
+    expect(setTimeout).toHaveBeenCalledTimes(3);
 
-    t.equal(listener.callCount, 3,
-        'listener is called once for the second bound listener');
+    // callback is called once for the second bound callback
+    expect(callback).toHaveBeenCalledTimes(3);
 
-    clock.tick(FRAME_TIME);
+    jest.advanceTimersByTime(FRAME_TIME);
 
     throttledListener();
 
-    t.equal(setTimeoutStub.callCount, 4,
-        'setTimeout is called again for the unbound listener after 1/60th second');
+    // setTimeout is called again for the unbound callback after 1/60th second
+    expect(setTimeout).toHaveBeenCalledTimes(4);
 
     boundThrottledListener1();
 
-    t.equal(setTimeoutStub.callCount, 5,
-        'setTimeout is called again for the first bound listener after 1/60th second');
+    // setTimeout is called again for the first bound callback after 1/60th second
+    expect(setTimeout).toHaveBeenCalledTimes(5);
 
     boundThrottledListener2();
 
-    t.equal(setTimeoutStub.callCount, 6,
-        'setTimeout is called again for the second bound listener after 1/60th second');
-}, teardown);
+    // setTimeout is called again for the second bound callback after 1/60th second
+    expect(setTimeout).toHaveBeenCalledTimes(6);
+  });
 
-test('throttles plain calls to the callback', (t) => {
-    setup();
-    t.plan(4);
-
-    const callback = sinon.spy();
+  it('throttles plain calls to the callback', () => {
+    const callback = jest.fn();
     const firstCallArgument = {};
     const throttledCallback = throttle(callback);
 
     throttledCallback(firstCallArgument);
 
-    t.true(callback.calledOnce,
-        'callback is called immediately after the first call');
-    t.true(callback.calledWithExactly(firstCallArgument),
-        'callback was called with the arguments for the first call');
+    // callback is called immediately after the first call
+    expect(callback).toHaveBeenCalledTimes(1);
+    // callback was called with the arguments for the first call
+    expect(callback).toHaveBeenCalledWith(firstCallArgument);
 
-    callback.reset();
+    callback.mockReset();
     throttledCallback();
 
-    t.false(callback.called,
-        'callback is not called upon second call to throttled callback before 1/60th second');
+    // callback is not called upon second call to throttled callback before 1/60th second
+    expect(callback).toHaveBeenCalledTimes(0);
 
     frameTick();
 
-    t.false(callback.called,
-        'callback is not called after 1/60 sec, without calling the throttled callback');
-}, teardown);
+    // callback is not called after 1/60 sec, without calling the throttled callback
+    expect(callback).toHaveBeenCalledTimes(0);
+  });
 
-test('calling `.apply` does not bypass the throttle', t => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('calling `.apply` does not bypass the throttle', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const context1 = {};
 
     throttledListener();
 
-    t.equal(listener.callCount, 1,
-        'listener is called once for the base listener');
+    // callback is called once for the base callback
+    expect(callback).toHaveBeenCalledTimes(1);
 
     throttledListener.apply(context1);
 
-    t.equal(listener.callCount, 1,
-        'raf is not called when `apply` called with a separate context after already waiting');
-}, teardown);
+    // raf is not called when `apply` called with a separate context after already waiting
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 
-test('calling `.apply` passes the context and args to the listener', t => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('calling `.apply` passes the context and args to the callback', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const context1 = {};
     const arg1 = {};
     const arg2 = {};
 
     throttledListener.apply(context1, [arg1, arg2]);
 
-    t.strictEquals(listener.getCall(0).thisValue, context1,
-        'listener is called with the passed context');
+    // callback is called with the passed context
+    expect(callback.mock.instances[0]).toBe(context1);
 
-    t.true(listener.calledWithExactly(arg1, arg2),
-        'listener is called with the passed args');
-}, teardown);
+    // callback is called with the passed args
+    expect(callback).toHaveBeenCalledWith(arg1, arg2);
+  });
 
-test('calling `.apply` with an undefined context passes the context and args to the listener', t => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('calling `.apply` with an undefined context passes the context and args to the callback', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
     const arg1 = {};
     const arg2 = {};
 
     throttledListener.apply(undefined, [arg1, arg2]);
 
-    t.strictEquals(listener.getCall(0).thisValue, undefined,
-        'listener is called with the passed context');
+    // callback is called with the passed context
+    expect(callback.mock.instances[0]).toBe(undefined);
 
-    t.true(listener.calledWithExactly(arg1, arg2),
-        'listener is called with the passed args');
-}, teardown);
+    // callback is called with the passed args
+    expect(callback).toHaveBeenCalledWith(arg1, arg2);
+  });
 
-test('calling `.apply` passes the _first_ context and args to the listener', t => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
-    const context1 = {context: 1};
-    const context2 = {context: 2};
-    const argA1 = {arg: 'a1'};
-    const argA2 = {arg: 'a2'};
-    const argB1 = {arg: 'b1'};
-    const argB2 = {arg: 'b2'};
+  it('calling `.apply` passes the _first_ context and args to the callback', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
+    const context1 = { context: 1 };
+    const context2 = { context: 2 };
+    const argA1 = { arg: 'a1' };
+    const argA2 = { arg: 'a2' };
+    const argB1 = { arg: 'b1' };
+    const argB2 = { arg: 'b2' };
 
     throttledListener.apply(context1, [argA1, argA2]);
     throttledListener.apply(context2, [argB1, argB2]);
 
-    t.strictEquals(listener.getCall(0).thisValue, context1,
-        'listener is called with the first context');
+    // callback is called with the first context
+    expect(callback.mock.instances[0]).toBe(context1);
 
-    t.true(listener.calledWithExactly(argA1, argA2),
-        'listener is called with the first args');
-}, teardown);
+    // callback is called with the first args
+    expect(callback).toHaveBeenCalledWith(argA1, argA2);
+  });
 
-test('calling `.bind` with arguments prepends those arguments to the final call', t => {
-    setup();
-    t.plan(2);
+  it('calling `.bind` with arguments prepends those arguments to the final call', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
+    const context1 = { context: 1 };
+    const argA1 = { arg: 'a1' };
+    const argA2 = { arg: 'a2' };
+    const argB1 = { arg: 'b1' };
+    const argB2 = { arg: 'b2' };
 
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
-    const context1 = {context: 1};
-    const argA1 = {arg: 'a1'};
-    const argA2 = {arg: 'a2'};
-    const argB1 = {arg: 'b1'};
-    const argB2 = {arg: 'b2'};
-
-    const boundThrottledListener = throttledListener.bind(context1, argA1, argA2);
+    const boundThrottledListener = throttledListener.bind(
+      context1,
+      argA1,
+      argA2
+    );
     boundThrottledListener(argB1, argB2);
 
-    t.strictEqual(listener.getCall(0).thisValue, context1,
-        'listener is called with the correct context');
+    // callback is called with the correct context
+    expect(callback.mock.instances[0]).toBe(context1);
 
-    t.deepEquals(listener.getCall(0).args, [argA1, argA2, argB1, argB2],
-        'listener is called with the combined args');
-}, teardown);
+    // callback is called with the combined args
+    expect(callback).toHaveBeenCalledWith(argA1, argA2, argB1, argB2);
+  });
 
-test('calling `.bind` with no arguments adds no extra arguments', t => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
-    const context1 = {context: 1};
-    const arg1 = {arg: '1'};
-    const arg2 = {arg: '2'};
+  it('calling `.bind` with no arguments adds no extra arguments', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
+    const context1 = { context: 1 };
+    const arg1 = { arg: '1' };
+    const arg2 = { arg: '2' };
 
     const boundThrottledListener = throttledListener.bind(context1);
     boundThrottledListener(arg1, arg2);
 
-    t.strictEqual(listener.getCall(0).thisValue, context1,
-        'listener is called with the correct context');
+    // callback is called with the correct context
+    expect(callback.mock.instances[0]).toBe(context1);
 
-    t.deepEquals(listener.getCall(0).args, [arg1, arg2],
-        'listener is called with the combined args');
-}, teardown);
+    // callback is called with the combined args
+    expect(callback).toHaveBeenCalledWith(arg1, arg2);
+  });
 
-test('calling `.bind` with arguments adds no extra arguments', t => {
-    setup();
-    t.plan(2);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
-    const context1 = {context: 1};
-    const arg1 = {arg: '1'};
-    const arg2 = {arg: '2'};
+  it('calling `.bind` with arguments adds no extra arguments', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
+    const context1 = { context: 1 };
+    const arg1 = { arg: '1' };
+    const arg2 = { arg: '2' };
 
     const boundThrottledListener = throttledListener.bind(context1, arg1, arg2);
     boundThrottledListener();
 
-    t.strictEqual(listener.getCall(0).thisValue, context1,
-        'listener is called with the correct context');
+    // callback is called with the correct context
+    expect(callback.mock.instances[0]).toBe(context1);
 
-    t.deepEquals(listener.getCall(0).args, [arg1, arg2],
-        'listener is called with the combined args');
-}, teardown);
+    // callback is called with the combined args
+    expect(callback).toHaveBeenCalledWith(arg1, arg2);
+  });
 
-test('calling `.bind` followed by `.apply` correctly combines arguments', t => {
-    setup();
-    t.plan(2);
+  it('calling `.bind` followed by `.apply` correctly combines arguments', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
+    const context1 = { context: 1 };
+    const context2 = { context: 2 };
+    const argA1 = { arg: 'a1' };
+    const argA2 = { arg: 'a2' };
+    const argB1 = { arg: 'b1' };
+    const argB2 = { arg: 'b2' };
 
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
-    const context1 = {context: 1};
-    const context2 = {context: 1};
-    const argA1 = {arg: 'a1'};
-    const argA2 = {arg: 'a2'};
-    const argB1 = {arg: 'b1'};
-    const argB2 = {arg: 'b2'};
-
-    const boundThrottledListener = throttledListener.bind(context1, argA1, argA2);
+    const boundThrottledListener = throttledListener.bind(
+      context1,
+      argA1,
+      argA2
+    );
     boundThrottledListener.apply(context2, [argB1, argB2]);
 
-    t.strictEqual(listener.getCall(0).thisValue, context1,
-        'listener is called with the correct context');
+    // callback is called with the correct context
+    expect(callback.mock.instances[0]).toBe(context1);
 
-    t.deepEquals(listener.getCall(0).args, [argA1, argA2, argB1, argB2],
-        'listener is called with the combined args');
-}, teardown);
+    // callback is called with the combined args
+    expect(callback).toHaveBeenCalledWith(argA1, argA2, argB1, argB2);
+  });
 
-test('calling `cancel` cancels the wait', t => {
-    setup();
-    t.plan(1);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
+  it('calling `cancel` cancels the wait', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
 
     throttledListener();
 
@@ -489,19 +431,16 @@ test('calling `cancel` cancels the wait', t => {
 
     throttledListener();
 
-    t.strictEqual(listener.callCount, 2,
-        'listener was called twice');
-}, teardown);
+    // callback was called twice
+    expect(callback).toHaveBeenCalledTimes(2);
+  });
 
-test('calling `cancel` on a bound throttled listener does not cancel the original or others bound from it', t => {
-    setup();
-    t.plan(5);
-
-    const listener = sinon.spy();
-    const throttledListener = throttle(listener);
-    const context0 = {context: 0};
-    const context1 = {context: 1};
-    const context2 = {context: 1};
+  it('calling `cancel` on a bound throttled callback does not cancel the original or others bound from it', () => {
+    const callback = jest.fn();
+    const throttledListener = throttle(callback);
+    const context0 = { context: 0 };
+    const context1 = { context: 1 };
+    const context2 = { context: 2 };
     const boundThrottledListener1 = throttledListener.bind(context1);
     const boundThrottledListener2 = throttledListener.bind(context2);
 
@@ -515,15 +454,16 @@ test('calling `cancel` on a bound throttled listener does not cancel the origina
     boundThrottledListener1();
     boundThrottledListener2();
 
-    t.strictEqual(listener.callCount, 4,
-        'listener was called four times');
+    // callback was called four times
+    expect(callback).toHaveBeenCalledTimes(4);
 
-    t.strictEqual(listener.getCall(0).thisValue, context0,
-        'first call was from unbound throttled listener');
-    t.strictEqual(listener.getCall(1).thisValue, context1,
-        'second call was through first bound throttled listener');
-    t.strictEqual(listener.getCall(2).thisValue, context2,
-        'third call was through second bound throttled listener');
-    t.strictEqual(listener.getCall(3).thisValue, context1,
-        'fourth call was through first bound throttled listener');
-}, teardown);
+    // first call was from unbound throttled callback
+    expect(callback.mock.instances[0]).toBe(context0);
+    // second call was through first bound throttled callback
+    expect(callback.mock.instances[1]).toBe(context1);
+    // third call was through second bound throttled callback
+    expect(callback.mock.instances[2]).toBe(context2);
+    // fourth call was through first bound throttled callback
+    expect(callback.mock.instances[3]).toBe(context1);
+  });
+});
