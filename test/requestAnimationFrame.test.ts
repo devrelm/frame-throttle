@@ -203,7 +203,7 @@ describe('throttle with requestAnimationFrame', () => {
     expect(listener).toHaveBeenCalledTimes(3);
   });
 
-  it('throttles plain calls to the listener', () => {
+  it('passes the latest arguments to the listener', () => {
     const listener = jest.fn();
     const firstCallArgument = 1;
     const secondCallArgument = 2;
@@ -220,8 +220,8 @@ describe('throttle with requestAnimationFrame', () => {
     // listener is called once after rAF
     expect(listener).toHaveBeenCalledTimes(1);
 
-    // listener was called with the arguments for the first call
-    expect(listener).toHaveBeenCalledWith(firstCallArgument);
+    // listener was called with the arguments for the latest call
+    expect(listener).toHaveBeenCalledWith(secondCallArgument);
   });
 
   it('calling `.apply` does not bypass the throttle', () => {
