@@ -7,9 +7,19 @@ export type Cancellable<T extends Function> = T & {
 
 type WindowWithoutRAF = Omit<Window, 'requestAnimationFrame'>;
 
-const wrapperFactory = function(wrapperContext: any) {
+type WrapperContext = {
+  cancelToken: number;
+  callbackThis?: any;
+  args?: any[];
+};
+
+const wrapperFactory = function() {
+  const wrapperContext: WrapperContext = {
+    cancelToken: 0,
+  };
+
   const resetCancelToken = () => {
-    wrapperContext.cancelToken = false;
+    wrapperContext.cancelToken = 0;
   };
 
   const wrapper = <T extends Function>(cbThis: any, cb: T, ...args: any[]) => {
@@ -50,7 +60,7 @@ const throttleFactory = function<T extends Function>(
   thisArg?: any,
   ...argArray: any[]
 ) {
-  const wrapper = wrapperFactory({});
+  const wrapper = wrapperFactory();
   const argCount = arguments.length;
   const throttledCallback = (function(...args: any[]) {
     wrapper(argCount > 1 ? thisArg : this, callback, ...argArray, ...args);
