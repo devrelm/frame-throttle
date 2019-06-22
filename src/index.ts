@@ -7,37 +7,37 @@ export type Cancellable<T extends Function> = T & {
 
 type WindowWithoutRAF = Omit<Window, 'requestAnimationFrame'>;
 
-type WrapperContext = {
+type WrapperState = {
   cancelToken: number;
   callbackThis?: any;
   args?: any[];
 };
 
 const wrapperFactory = function() {
-  const wrapperContext: WrapperContext = {
+  const state: WrapperState = {
     cancelToken: 0,
   };
 
   const resetCancelToken = () => {
-    wrapperContext.cancelToken = 0;
+    state.cancelToken = 0;
   };
 
   const wrapper = <T extends Function>(cbThis: any, cb: T, ...args: any[]) => {
-    wrapperContext.callbackThis = cbThis;
-    wrapperContext.args = args;
+    state.callbackThis = cbThis;
+    state.args = args;
 
-    if (wrapperContext.cancelToken) {
+    if (state.cancelToken) {
       return;
     }
 
     if ('requestAnimationFrame' in window) {
-      wrapperContext.cancelToken = window.requestAnimationFrame(() => {
-        cb.apply(wrapperContext.callbackThis, wrapperContext.args);
+      state.cancelToken = window.requestAnimationFrame(() => {
+        cb.apply(state.callbackThis, state.args);
         resetCancelToken();
       });
     } else {
-      cb.apply(wrapperContext.callbackThis, wrapperContext.args);
-      wrapperContext.cancelToken = (window as WindowWithoutRAF).setTimeout(
+      cb.apply(state.callbackThis, state.args);
+      state.cancelToken = (window as WindowWithoutRAF).setTimeout(
         resetCancelToken,
         1000 / 60
       ); // 60 fps
@@ -46,9 +46,9 @@ const wrapperFactory = function() {
 
   (wrapper as Cancellable<typeof wrapper>).cancel = () => {
     if ('requestAnimationFrame' in window) {
-      window.cancelAnimationFrame(wrapperContext.cancelToken);
+      window.cancelAnimationFrame(state.cancelToken);
     }
-    window.clearTimeout(wrapperContext.cancelToken);
+    window.clearTimeout(state.cancelToken);
     resetCancelToken();
   };
 
