@@ -44,7 +44,7 @@ const wrapperFactory = function() {
     }
   };
 
-  (wrapper as Cancellable<typeof wrapper>).cancel = () => {
+  wrapper.cancel = () => {
     if ('requestAnimationFrame' in window) {
       window.cancelAnimationFrame(state.cancelToken);
     }
