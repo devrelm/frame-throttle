@@ -3,6 +3,10 @@ language: node_js
 node_js:
   - '10'
 
+script:
+  - yarn build
+  - yarn test
+
 after_script:
   - yarn coveralls
 
