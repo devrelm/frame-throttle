@@ -7,6 +7,8 @@ export type Cancellable<T extends Function>
         cancel(): void;
     }
 
+type WindowWithoutRAF = Omit<Window, 'requestAnimationFrame'>;
+
 const wrapperFactory = function (wrapperContext: any) {
     const resetCancelToken = () => {
         wrapperContext.cancelToken = false;
@@ -27,7 +29,7 @@ const wrapperFactory = function (wrapperContext: any) {
             });
         } else {
             cb.apply(wrapperContext.callbackThis, wrapperContext.args);
-            wrapperContext.cancelToken = window.setTimeout(resetCancelToken, 1000 / 60); // 60 fps
+            wrapperContext.cancelToken = (window as WindowWithoutRAF).setTimeout(resetCancelToken, 1000 / 60); // 60 fps
         }
     };
 

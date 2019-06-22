@@ -1,20 +1,30 @@
 {
-    "compilerOptions": {
-        "declaration": true,
-        "listFiles": true,
-        "moduleResolution": "node",
-        "newLine": "LF",
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "outDir": "./dist",
-        "strictNullChecks": true
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
+    "importHelpers": true,
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": "./",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": false,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/*", "node_modules/*"]
     },
-    "files": [
-        "src/frame-throttle.ts",
-        "src/tests/requestAnimationFrame.tests.ts",
-        "src/tests/setTimeout.tests.ts",
-        "src/tests/frame-throttle.tests.ts"
-    ]
+    "jsx": "react",
+    "esModuleInterop": true
+  },
+  "include": ["src", "types", "tests"]
 }
