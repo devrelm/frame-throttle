@@ -1,4 +1,5 @@
-export type Cancellable<T extends Function> = T & {
+export type Cancellable<T extends (...args: any[]) => void> = {
+  (...args: Parameters<T>): void;
   /**
    * Cancel the next scheduled invocation of the callback.
    */
@@ -55,16 +56,16 @@ const wrapperFactory = function() {
   return wrapper as Cancellable<typeof wrapper>;
 };
 
-const throttleFactory = function<T extends Function>(
+const throttleFactory = function<T extends (...args: any[]) => void>(
   callback: T,
   thisArg?: any,
   ...argArray: any[]
-) {
+): Cancellable<T> {
   const wrapper = wrapperFactory();
   const argCount = arguments.length;
-  const throttledCallback = (function(...args: any[]) {
+  const throttledCallback = function(...args: Parameters<T>) {
     wrapper(argCount > 1 ? thisArg : this, callback, ...argArray, ...args);
-  } as any) as Cancellable<T>;
+  };
   throttledCallback.cancel = () => wrapper.cancel();
   return throttledCallback;
 };
@@ -76,7 +77,9 @@ const throttleFactory = function<T extends Function>(
  *
  * @param callback the function to be throttled
  */
-export const throttle = <T extends Function>(callback: T): Cancellable<T> => {
+export const throttle = <T extends (...args: any[]) => void>(
+  callback: T
+): Cancellable<T> => {
   const throttledCallback = throttleFactory(callback);
 
   // Override `bind()` to create a new throttled callback, otherwise both
