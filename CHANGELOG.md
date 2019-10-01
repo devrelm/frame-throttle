@@ -6,6 +6,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [UNRELEASED]
 
+### Changed
+
+- Improved `Cancellable<T>` type arg constraint (#18)
+
 ### Chores
 
 - Updated project to use [TSDX](https://github.com/palmerhq/tsdx) (#8)
