@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Chores
 
 - Updated project to use [TSDX](https://github.com/palmerhq/tsdx) (#8)
+- Updated TypeScript to 3.6.3 (#15)
 
 ## [3.0.0] - 2017-08-28
 
