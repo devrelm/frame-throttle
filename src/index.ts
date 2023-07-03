@@ -6,7 +6,7 @@ export type Cancellable<T extends (...args: any[]) => void> = {
   cancel(): void;
 };
 
-type WindowWithoutRAF = Omit<Window, 'requestAnimationFrame'>;
+type WindowWithoutRAF = Omit<self, 'requestAnimationFrame'>;
 
 type WrapperState = {
   cancelToken: number;
@@ -31,14 +31,14 @@ const wrapperFactory = function() {
       return;
     }
 
-    if ('requestAnimationFrame' in window) {
-      state.cancelToken = window.requestAnimationFrame(() => {
+    if ('requestAnimationFrame' in self) {
+      state.cancelToken = self.requestAnimationFrame(() => {
         cb.apply(state.callbackThis, state.args);
         resetCancelToken();
       });
     } else {
       cb.apply(state.callbackThis, state.args);
-      state.cancelToken = (window as WindowWithoutRAF).setTimeout(
+      state.cancelToken = (self as WindowWithoutRAF).setTimeout(
         resetCancelToken,
         1000 / 60
       ); // 60 fps
@@ -46,10 +46,10 @@ const wrapperFactory = function() {
   };
 
   wrapper.cancel = () => {
-    if ('requestAnimationFrame' in window) {
-      window.cancelAnimationFrame(state.cancelToken);
+    if ('requestAnimationFrame' in self) {
+      self.cancelAnimationFrame(state.cancelToken);
     }
-    window.clearTimeout(state.cancelToken);
+    self.clearTimeout(state.cancelToken);
     resetCancelToken();
   };
 
